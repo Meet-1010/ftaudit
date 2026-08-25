@@ -52,9 +52,10 @@ def test_native_scan_flags_undeclared_cython_only():
     from ftaudit.native import scan_native_sources
 
     findings, sources = scan_native_sources(os.path.join(HERE, "corpus", "native"))
-    assert set(sources) == {"mymod.pyx", "safe_mod.pyx"}
+    assert set(sources) == {"mymod.pyx", "safe_mod.pyx", "header.pxd"}
     flagged = {f.path for f in findings}
-    assert flagged == {"mymod.pyx"}, "the declared module must not be flagged"
+    # safe_mod.pyx declares the directive; header.pxd compiles to no module.
+    assert flagged == {"mymod.pyx"}
 
 
 def test_safe_corpus_has_no_actionable_findings():

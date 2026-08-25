@@ -1,0 +1,33 @@
+scanned 85 packages / 4963 files -> 429 high-severity findings
+
+package                    files  high   med   low   top rules
+pandas                       298    95    19     5   FT106:91, FT104:13, FT101:10
+scipy                        602    49    19     5   FT106:42, FT104:17, FT101:4
+sympy                        845    39    81    14   FT104:67, FT101:17, FT105:15
+_pytest                       78    31     5     0   FT106:28, FT104:3, FT102:2
+hypothesis                   103    28    44     4   FT104:40, FT106:17, FT101:7
+matplotlib                   140    23    53     5   FT104:28, FT110:20, FT106:15
+coverage                      44    21    13    11   FT106:17, FT104:16, FT110:4
+numpy                        166    18   111     9   FT101:67, FT104:50, FT105:12
+joblib                        46    12    21     1   FT104:12, FT101:10, FT106:8
+sqlalchemy                   218    11    40     4   FT104:27, FT110:15, FT112:5
+pydantic                     105    11    11     2   FT104:11, FT102:6, FT106:4
+anyio                         43    10    10     0   FT104:8, FT106:4, FT107:3
+aiohttp                       54     9     4     0   FT106:4, FT112:3, FT101:2
+click                         17     7     2     0   FT106:5, FT104:2, FT102:1
+networkx                     287     6     9     0   FT106:5, FT104:5, FT110:4
+fsspec                        48     5    18     3   FT104:16, FT110:3, FT101:2
+cffi                          20     5     6     6   FT104:7, FT106:4, FT110:4
+yaml                          17     5     6     4   FT104:9, FT105:5, FT110:1
+mpmath                        51     4    13     5   FT104:15, FT101:3, FT103:3
+flask                         24     4     0     2   FT106:3, FT104:2, FT102:1
+lxml                          29     4     2     0   FT104:2, FT112:2, FT106:1
+werkzeug                      52     4     2     0   FT102:2, FT106:2, FT101:1
+PIL                           97     3    27     1   FT104:21, FT101:6, FT102:2
+pygments                     343     3     7     2   FT104:5, FT110:4, FT103:3
+urllib3                       36     3     1     0   FT102:2, FT106:1, FT101:1
+requests                      19     3     0     0   FT106:2, FT107:1
+pyparsing                     17     2     6     2   FT104:3, FT110:3, FT105:2
+certifi                        3     2     2     0   FT102:2, FT101:2
+watchdog                      25     2     1     0   FT106:2, FT104:1
+jinja2                        25     2     0     0   FT103:1, FT106:1

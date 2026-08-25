@@ -10,6 +10,7 @@ was re-run with `PYTHON_GIL=1` on the same interpreter and the same wheels, so
 | # | Target | Finding | Deliverable |
 | --- | --- | --- | --- |
 | [01](01-cpython-generator-crash.md) | CPython 3.13t / 3.14t | Concurrent generator iteration segfaults the interpreter. Fixed on `main`, never backported. | reproducer + version matrix + backport request |
+| [06](06-sympy-dummy-index.md) | SymPy 1.14.0 | Concurrent `Dummy()` collides on `dummy_index`, so distinct dummies compare equal | patch + regression test |
 | [02](02-gil-reenabled-packages.md) | lxml, grpcio, SQLAlchemy | Undeclared extensions re-enable the GIL for the whole process | measurement + per-project reports |
 | [03](03-pyyaml-registries.md) | PyYAML 6.0.3 | Concurrent `add_constructor` / `add_*_resolver` silently loses registrations | patch + 5 regression tests |
 | [04](04-werkzeug-logger.md) | Werkzeug | Duplicate log handler installed on concurrent first log | patch |
@@ -23,7 +24,8 @@ was re-run with `PYTHON_GIL=1` on the same interpreter and the same wheels, so
   clone so they apply directly.
 - `crash_matrix.json`, `crash_matrix.txt` — raw cross-interpreter data for #01.
 - `gilcheck.json` — raw output of `ftaudit gilcheck --installed` for #02.
-- `ecosystem_scan.json` — raw static findings across 79 packages.
+- `ecosystem_scan.json`, `ecosystem_scan.txt` — raw static findings across 85 packages.
+- `../upstream/` — ready-to-file issue and pull-request text per project.
 
 ## Reproducing
 
@@ -41,6 +43,15 @@ python3.14 bench/ecosystem_scan.py .venv-ft/lib/python3.14t/site-packages
 
 Two of these (03, 04) need registration or first-log to happen concurrently,
 which many programs never do. They are real correctness bugs with narrow
-triggers, not everyday crashes, and the write-ups say so. Finding 01 is the
-one with broad reach: sharing a generator across a thread pool is ordinary,
-and the failure is an uncatchable process death.
+triggers, not everyday crashes, and the write-ups say so.
+
+The two with broad reach are 01 and 06. Sharing a generator across a thread pool
+is ordinary and the failure is an uncatchable process death; and SymPy's `Dummy`
+collision produces a *wrong answer* with no error at all, which is the worst
+failure mode in the set.
+
+One finding was investigated and **dropped**: `np.seterr()` inside
+`numpy/ma/core.py` looked like process-global mutation on a hot path, but numpy
+made `errstate` context-local in 2.0 and a two-thread test confirmed no leakage.
+That was a false positive in FT106, and the rule was fixed rather than the
+non-bug reported.

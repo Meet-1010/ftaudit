@@ -87,3 +87,19 @@ class Session:
 @functools.cached_property
 def _unused(self):
     return 1
+
+
+def scoped_numpy_state(x):
+    # numpy made errstate context-local in 2.0, so a seterr inside it is
+    # restored per-thread and is not a cross-thread hazard.
+    import numpy as np
+    with np.errstate():
+        np.seterr(divide="ignore", invalid="ignore")
+        return x
+
+
+def scoped_decimal_context(x):
+    import decimal
+    with decimal.localcontext() as ctx:
+        ctx.prec = 50
+        return +x

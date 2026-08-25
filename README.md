@@ -119,6 +119,10 @@ A linter for races is only useful if you believe its output, so the analyser:
 - **treats `dict.setdefault` and `list.append` as atomic**, because they are.
 - **subsumes** weaker findings into stronger ones, so one racy cache lookup is
   reported once instead of three times.
+- **knows which "process globals" are actually context-local.** A `np.seterr`
+  inside `with np.errstate():` is restored per-thread since numpy 2.0, so FT106
+  stays quiet there — `warnings.catch_warnings` deliberately does not get that
+  pass, because it is still documented as thread-unsafe.
 - honours `# noqa: FT102` and `# ftaudit: ignore`.
 
 `tests/corpus/safe.py` holds the *correct* version of every pattern in
@@ -142,12 +146,14 @@ Static findings are hypotheses. `ftaudit.stress` turns them into evidence:
 
 ## What it found
 
-Run against 79 packages / 4 726 files of the installed scientific-Python and
-web stack. Full write-ups in [`findings/`](findings/).
+Run against 85 packages / 4 963 files of the installed scientific-Python and
+web stack. Full write-ups in [`findings/`](findings/); ready-to-file issue and
+PR text in [`upstream/`](upstream/).
 
 | # | Finding | Status |
 | --- | --- | --- |
-| [01](findings/01-cpython-generator-crash.md) | **CPython segfaults** when two threads iterate one generator, on free-threaded 3.13/3.14. Fixed in 3.15, never backported. 150 crashes / 180 runs. | backport request ready |
+| [01](findings/01-cpython-generator-crash.md) | **CPython segfaults** when two threads iterate one generator, on free-threaded 3.13/3.14. Fixed in 3.15, never backported. 150 crashes / 180 runs. | backport request drafted |
+| [06](findings/06-sympy-dummy-index.md) | **SymPy** hands out colliding `dummy_index` values, so symbols meant to be distinct compare **equal** — silently wrong maths. 73% collided. | patch + regression test |
 | [02](findings/02-gil-reenabled-packages.md) | **lxml, grpcio, SQLAlchemy** silently re-enable the GIL process-wide. Importing `bs4` is enough. | reports ready |
 | [03](findings/03-pyyaml-registries.md) | **PyYAML** loses constructor/resolver registrations under concurrent registration. | patch + 5 regression tests |
 | [04](findings/04-werkzeug-logger.md) | **Werkzeug** installs its log handler twice; every line printed twice. | patch |
@@ -158,6 +164,11 @@ web stack. Full write-ups in [`findings/`](findings/).
 ```bash
 .venv-ft/bin/python -m pytest tests/ -q     # 32 tests
 ```
+
+CI runs the suite on 3.13t / 3.14t / 3.15t / 3.14 across Linux, macOS and
+Windows, re-runs every reproducer on each platform (the findings were first
+measured on macOS/arm64 only), and scans ftaudit's own source — which is
+expected to come back clean.
 
 ## Licence
 

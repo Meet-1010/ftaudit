@@ -249,6 +249,26 @@ PROCESS_GLOBAL_SUBSCRIPTS: dict[str, str] = {
     "sys.path": "the interpreter import path",
 }
 
+#: Context managers that scope an otherwise-process-global setting to the
+#: calling thread. numpy made errstate/printoptions context-local in 2.0 and
+#: decimal.localcontext has always been thread-local, so a mutation *inside*
+#: one of these is not a cross-thread hazard and must not be reported.
+#: warnings.catch_warnings is deliberately absent: it is still documented as
+#: not thread-safe.
+SCOPING_CONTEXT_MANAGERS: frozenset[str] = frozenset(
+    {
+        "numpy.errstate",
+        "np.errstate",
+        "errstate",
+        "numpy.printoptions",
+        "np.printoptions",
+        "printoptions",
+        "decimal.localcontext",
+        "localcontext",
+    }
+)
+
+
 #: Names that, when constructed, produce a lock-like object.
 LOCK_CONSTRUCTORS: frozenset[str] = frozenset(
     {

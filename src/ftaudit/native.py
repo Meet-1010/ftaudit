@@ -22,7 +22,10 @@ from .model import Confidence, Finding, Severity
 from .rules import RULES
 
 _C_EXT = (".c", ".cpp", ".cc", ".cxx", ".m")
-_CY_EXT = (".pyx", ".pxd")
+# .pxd is a *declaration* file -- a Cython header.  It never compiles to a
+# module of its own, so it can neither carry nor need the freethreading
+# directive; only .pyx implementation files can.
+_CY_EXT = (".pyx",)
 
 _DECLARES_C = re.compile(
     r"Py_mod_gil|PyUnstable_Module_SetGIL|Py_MOD_GIL_NOT_USED"
@@ -69,6 +72,8 @@ def scan_native_sources(root: str) -> tuple[list[Finding], list[str]]:
             for fn in filenames:
                 if fn.endswith(_C_EXT + _CY_EXT):
                     candidates.append(os.path.join(dirpath, fn))
+                elif fn.endswith(".pxd"):
+                    sources.append(os.path.relpath(os.path.join(dirpath, fn), root))
 
     global_declared = _build_config_declares(base)
 

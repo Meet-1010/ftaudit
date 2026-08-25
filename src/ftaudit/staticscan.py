@@ -35,6 +35,7 @@ from .rules import (
     PROCESS_GLOBAL_SUBSCRIPTS,
     PROCESS_GLOBALS,
     RULES,
+    SCOPING_CONTEXT_MANAGERS,
 )
 
 _SUPPRESS_RE = re.compile(r"#\s*(?:ftaudit\s*:\s*ignore|noqa\s*:?\s*(?P<codes>[A-Z0-9, ]*))")
@@ -373,6 +374,7 @@ class _FunctionWalker:
         self.suppressed = suppressed
         self.findings: list[Finding] = []
         self.lock_depth = 0
+        self.scoped_depth = 0
         self.scopes: list[_Scope] = []
         # name -> the expression it was most recently assigned from, in the current function
         self.local_origin: dict[str, ast.AST] = {}
@@ -398,6 +400,9 @@ class _FunctionWalker:
         if codes is not None and (not codes or rule_id in codes):
             return
         sev = severity or rule.severity
+        if rule_id == "FT106" and self.scoped_depth > 0:
+            # the setting is restored per-thread by the enclosing context manager
+            return
         if self.lock_depth > 0:
             # Held under a lock: keep it, but as context rather than a defect.
             sev = Severity.INFO
@@ -606,9 +611,16 @@ class _FunctionWalker:
             for item in node.items:
                 if self.is_lock_expr(item.context_expr):
                     added += 1
+            scoped = sum(
+                1 for item in node.items
+                if isinstance(item.context_expr, ast.Call)
+                and (dotted(item.context_expr.func) or "") in SCOPING_CONTEXT_MANAGERS
+            )
             self.lock_depth += added
+            self.scoped_depth += scoped
             for sub in node.body:
                 self.walk_stmt(sub, in_finally=in_finally)
+            self.scoped_depth -= scoped
             self.lock_depth -= added
             return
 

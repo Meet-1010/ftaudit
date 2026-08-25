@@ -14,7 +14,7 @@
    "FT103": 1,
    "FT110": 1
   },
-  "duration_s": 1.77,
+  "duration_s": 1.83,
   "findings": [
    {
     "rule": "FT106",
@@ -1743,21 +1743,22 @@
  {
   "package": "scipy",
   "files": 602,
-  "high": 47,
+  "high": 49,
   "medium": 19,
   "low": 5,
-  "total": 71,
+  "total": 73,
   "by_rule": {
-   "FT106": 43,
+   "FT106": 42,
    "FT104": 17,
    "FT101": 4,
+   "FT112": 3,
    "FT105": 2,
    "FT114": 2,
    "FT102": 1,
    "FT110": 1,
    "FT103": 1
   },
-  "duration_s": 2.96,
+  "duration_s": 3.06,
   "findings": [
    {
     "rule": "FT102",
@@ -2592,22 +2593,64 @@
     "extra": {}
    },
    {
-    "rule": "FT106",
-    "name": "process-global-mutation",
-    "message": "`warnings.simplefilter()` mutates the global warnings filter",
-    "path": "stats/_variation.py",
-    "line": 116,
-    "col": 8,
-    "end_line": 116,
+    "rule": "FT112",
+    "name": "native-ext-no-ft-declaration",
+    "message": "Cython module `linalg/tests/_cython_examples/extending.pyx` does not set `# cython: freethreading_compatible = True`",
+    "path": "linalg/tests/_cython_examples/extending.pyx",
+    "line": 6,
+    "col": 0,
+    "end_line": 6,
     "severity": "high",
-    "confidence": "high",
-    "symbol": "warnings.simplefilter",
-    "function": "variation",
-    "snippet": "warnings.simplefilter(\"ignore\")",
-    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
-    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "confidence": "medium",
+    "symbol": "linalg/tests/_cython_examples/extending.pyx",
+    "function": "<module definition>",
+    "snippet": "",
+    "why": "An extension module that does not set Py_mod_gil = Py_MOD_GIL_NOT_USED (or, for Cython, `# cython: freethreading_compatible=True`) makes CPython re-enable the GIL for the whole process at import time. One such dependency silently removes free-threading from every other library in the program.",
+    "fix": "Audit the extension for thread safety, then add the Py_mod_gil slot via multi-phase init (or the Cython directive) and ship a cp3XXt wheel.",
     "under_lock": false,
-    "extra": {}
+    "extra": {
+     "language": "cython"
+    }
+   },
+   {
+    "rule": "FT112",
+    "name": "native-ext-no-ft-declaration",
+    "message": "Cython module `optimize/tests/_cython_examples/extending.pyx` does not set `# cython: freethreading_compatible = True`",
+    "path": "optimize/tests/_cython_examples/extending.pyx",
+    "line": 9,
+    "col": 0,
+    "end_line": 9,
+    "severity": "high",
+    "confidence": "medium",
+    "symbol": "optimize/tests/_cython_examples/extending.pyx",
+    "function": "<module definition>",
+    "snippet": "",
+    "why": "An extension module that does not set Py_mod_gil = Py_MOD_GIL_NOT_USED (or, for Cython, `# cython: freethreading_compatible=True`) makes CPython re-enable the GIL for the whole process at import time. One such dependency silently removes free-threading from every other library in the program.",
+    "fix": "Audit the extension for thread safety, then add the Py_mod_gil slot via multi-phase init (or the Cython directive) and ship a cp3XXt wheel.",
+    "under_lock": false,
+    "extra": {
+     "language": "cython"
+    }
+   },
+   {
+    "rule": "FT112",
+    "name": "native-ext-no-ft-declaration",
+    "message": "Cython module `special/tests/_cython_examples/extending.pyx` does not set `# cython: freethreading_compatible = True`",
+    "path": "special/tests/_cython_examples/extending.pyx",
+    "line": 6,
+    "col": 0,
+    "end_line": 6,
+    "severity": "high",
+    "confidence": "medium",
+    "symbol": "special/tests/_cython_examples/extending.pyx",
+    "function": "<module definition>",
+    "snippet": "",
+    "why": "An extension module that does not set Py_mod_gil = Py_MOD_GIL_NOT_USED (or, for Cython, `# cython: freethreading_compatible=True`) makes CPython re-enable the GIL for the whole process at import time. One such dependency silently removes free-threading from every other library in the program.",
+    "fix": "Audit the extension for thread safety, then add the Py_mod_gil slot via multi-phase init (or the Cython directive) and ship a cp3XXt wheel.",
+    "under_lock": false,
+    "extra": {
+     "language": "cython"
+    }
    }
   ]
  },
@@ -2627,7 +2670,7 @@
    "FT102": 9,
    "FT103": 6
   },
-  "duration_s": 5.6,
+  "duration_s": 5.83,
   "findings": [
    {
     "rule": "FT106",
@@ -3384,7 +3427,7 @@
    "FT110": 1,
    "FT101": 1
   },
-  "duration_s": 0.41,
+  "duration_s": 0.39,
   "findings": [
    {
     "rule": "FT106",
@@ -3957,6 +4000,554 @@
   ]
  },
  {
+  "package": "hypothesis",
+  "files": 103,
+  "high": 28,
+  "medium": 44,
+  "low": 4,
+  "total": 76,
+  "by_rule": {
+   "FT104": 40,
+   "FT106": 17,
+   "FT101": 7,
+   "FT102": 6,
+   "FT105": 3,
+   "FT103": 2,
+   "FT110": 1
+  },
+  "duration_s": 0.49,
+  "findings": [
+   {
+    "rule": "FT102",
+    "name": "lazy-init-race",
+    "message": "`__hypothesis_home_directory` is lazily initialised with an unsynchronised check-then-act",
+    "path": "configuration.py",
+    "line": 64,
+    "col": 4,
+    "end_line": 66,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "__hypothesis_home_directory",
+    "function": "storage_directory",
+    "snippet": "if not __hypothesis_home_directory:\n    if where := os.getenv(\"HYPOTHESIS_STORAGE_DIRECTORY\"):\n        __hypothesis_home_directory = Path(where)",
+    "why": "`if X is None: X = expensive()` is two bytecode-separated operations. Under free-threading N threads can all observe None and all run the initialiser. That duplicates side effects (open files, spawned threads, registered handles) and, worse, lets one thread publish an object that another thread is still mutating.",
+    "fix": "Guard with a module-level lock and re-check inside it, or precompute the value at import time, or use functools.cache (whose C implementation is atomic) when the initialiser is genuinely pure.",
+    "under_lock": false,
+    "extra": {
+     "assign_lines": [
+      66
+     ]
+    }
+   },
+   {
+    "rule": "FT102",
+    "name": "lazy-init-race",
+    "message": "`__hypothesis_home_directory` is lazily initialised with an unsynchronised check-then-act",
+    "path": "configuration.py",
+    "line": 67,
+    "col": 4,
+    "end_line": 68,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "__hypothesis_home_directory",
+    "function": "storage_directory",
+    "snippet": "if not __hypothesis_home_directory:\n    __hypothesis_home_directory = __hypothesis_home_directory_default",
+    "why": "`if X is None: X = expensive()` is two bytecode-separated operations. Under free-threading N threads can all observe None and all run the initialiser. That duplicates side effects (open files, spawned threads, registered handles) and, worse, lets one thread publish an object that another thread is still mutating.",
+    "fix": "Guard with a module-level lock and re-check inside it, or precompute the value at import time, or use functools.cache (whose C implementation is atomic) when the initialiser is genuinely pure.",
+    "under_lock": false,
+    "extra": {
+     "assign_lines": [
+      68
+     ]
+    }
+   },
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "warnings.catch_warnings() swaps the global warnings filter and is documented as not thread-safe",
+    "path": "extra/ghostwriter.py",
+    "line": 634,
+    "col": 9,
+    "end_line": 634,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "warnings.catch_warnings",
+    "function": "_imports_for_strategy",
+    "snippet": "with warnings.catch_warnings():",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "`warnings.simplefilter()` mutates the global warnings filter",
+    "path": "extra/ghostwriter.py",
+    "line": 635,
+    "col": 8,
+    "end_line": 635,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "warnings.simplefilter",
+    "function": "_imports_for_strategy",
+    "snippet": "warnings.simplefilter(\"ignore\", SmallSearchSpaceWarning)",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "warnings.catch_warnings() swaps the global warnings filter and is documented as not thread-safe",
+    "path": "extra/ghostwriter.py",
+    "line": 685,
+    "col": 17,
+    "end_line": 685,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "warnings.catch_warnings",
+    "function": "_valid_syntax_repr",
+    "snippet": "with warnings.catch_warnings():",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "`warnings.simplefilter()` mutates the global warnings filter",
+    "path": "extra/ghostwriter.py",
+    "line": 686,
+    "col": 16,
+    "end_line": 686,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "warnings.simplefilter",
+    "function": "_valid_syntax_repr",
+    "snippet": "warnings.simplefilter(\"ignore\", SmallSearchSpaceWarning)",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT102",
+    "name": "lazy-init-race",
+    "message": "`_charmap` is lazily initialised with an unsynchronised check-then-act",
+    "path": "internal/charmap.py",
+    "line": 92,
+    "col": 4,
+    "end_line": 138,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "_charmap",
+    "function": "charmap",
+    "snippet": "if _charmap is None:\n    f = charmap_file()\n    try:\n        with gzip.GzipFile(f, \"rb\") as d:\n            tmp_charmap = dict(json.load(d))\n\n    except Exception:",
+    "why": "`if X is None: X = expensive()` is two bytecode-separated operations. Under free-threading N threads can all observe None and all run the initialiser. That duplicates side effects (open files, spawned threads, registered handles) and, worse, lets one thread publish an object that another thread is still mutating.",
+    "fix": "Guard with a module-level lock and re-check inside it, or precompute the value at import time, or use functools.cache (whose C implementation is atomic) when the initialiser is genuinely pure.",
+    "under_lock": false,
+    "extra": {
+     "assign_lines": [
+      129
+     ]
+    }
+   },
+   {
+    "rule": "FT102",
+    "name": "lazy-init-race",
+    "message": "`_categories` is lazily initialised with an unsynchronised check-then-act",
+    "path": "internal/charmap.py",
+    "line": 207,
+    "col": 4,
+    "end_line": 214,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "_categories",
+    "function": "categories",
+    "snippet": "if _categories is None:\n    cm = charmap()\n    categories = sorted(cm.keys(), key=lambda c: len(cm[c]))\n    categories.remove(\"Cc\")  # Other, Control\n    categories.remove(\"Cs\")  # Other, Surrogate\n    categories.append(\"Cc\")\n    categories.append(\"Cs\")",
+    "why": "`if X is None: X = expensive()` is two bytecode-separated operations. Under free-threading N threads can all observe None and all run the initialiser. That duplicates side effects (open files, spawned threads, registered handles) and, worse, lets one thread publish an object that another thread is still mutating.",
+    "fix": "Guard with a module-level lock and re-check inside it, or precompute the value at import time, or use functools.cache (whose C implementation is atomic) when the initialiser is genuinely pure.",
+    "under_lock": false,
+    "extra": {
+     "assign_lines": [
+      214
+     ]
+    }
+   },
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "`sys.setrecursionlimit()` mutates the interpreter recursion limit",
+    "path": "internal/conjecture/junkdrawer.py",
+    "line": 358,
+    "col": 8,
+    "end_line": 358,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "sys.setrecursionlimit",
+    "function": "StackframeLimiter._setrecursionlimit",
+    "snippet": "sys.setrecursionlimit(new_limit)",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT102",
+    "name": "lazy-init-race",
+    "message": "`_gc_initialized` is lazily initialised with an unsynchronised check-then-act",
+    "path": "internal/conjecture/junkdrawer.py",
+    "line": 489,
+    "col": 4,
+    "end_line": 528,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "_gc_initialized",
+    "function": "gc_cumulative_time",
+    "snippet": "if not _gc_initialized:\n    if hasattr(gc, \"callbacks\"):\n        # CPython\n        def gc_callback(\n            phase: Literal[\"start\", \"stop\"], info: dict[str, int]\n        ) -> None:\n            global _gc_start, _gc_cumulative_time",
+    "why": "`if X is None: X = expensive()` is two bytecode-separated operations. Under free-threading N threads can all observe None and all run the initialiser. That duplicates side effects (open files, spawned threads, registered handles) and, worse, lets one thread publish an object that another thread is still mutating.",
+    "fix": "Guard with a module-level lock and re-check inside it, or precompute the value at import time, or use functools.cache (whose C implementation is atomic) when the initialiser is genuinely pure.",
+    "under_lock": false,
+    "extra": {
+     "assign_lines": [
+      528
+     ]
+    }
+   },
+   {
+    "rule": "FT105",
+    "name": "read-modify-write",
+    "message": "`_gc_cumulative_time +=` is a non-atomic read-modify-write on shared state",
+    "path": "internal/conjecture/junkdrawer.py",
+    "line": 501,
+    "col": 24,
+    "end_line": 501,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "_gc_cumulative_time",
+    "function": "gc_cumulative_time.gc_callback",
+    "snippet": "_gc_cumulative_time += now - _gc_start  # pragma: no cover # ??",
+    "why": "`counter += 1` compiles to LOAD / BINARY_OP / STORE. With the GIL these rarely interleaved; without it they interleave constantly and increments are silently lost. This is the single most reproducible free-threading bug.",
+    "fix": "Use itertools.count().__next__, a lock, or move the counter into per-thread state and aggregate at the end.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT105",
+    "name": "read-modify-write",
+    "message": "`_gc_cumulative_time +=` is a non-atomic read-modify-write on shared state",
+    "path": "internal/conjecture/junkdrawer.py",
+    "line": 519,
+    "col": 20,
+    "end_line": 519,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "_gc_cumulative_time",
+    "function": "gc_cumulative_time.hook",
+    "snippet": "_gc_cumulative_time += stats.duration",
+    "why": "`counter += 1` compiles to LOAD / BINARY_OP / STORE. With the GIL these rarely interleaved; without it they interleave constantly and increments are silently lost. This is the single most reproducible free-threading bug.",
+    "fix": "Use itertools.count().__next__, a lock, or move the counter into per-thread state and aggregate at the end.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT105",
+    "name": "read-modify-write",
+    "message": "`_local_constants |=` is a non-atomic read-modify-write on shared state",
+    "path": "internal/conjecture/providers.py",
+    "line": 371,
+    "col": 8,
+    "end_line": 371,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "_local_constants",
+    "function": "_get_local_constants",
+    "snippet": "_local_constants |= new_constants",
+    "why": "`counter += 1` compiles to LOAD / BINARY_OP / STORE. With the GIL these rarely interleaved; without it they interleave constantly and increments are silently lost. This is the single most reproducible free-threading bug.",
+    "fix": "Use itertools.count().__next__, a lock, or move the counter into per-thread state and aggregate at the end.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT102",
+    "name": "lazy-init-race",
+    "message": "`NP_RANDOM` is lazily initialised with an unsynchronised check-then-act",
+    "path": "internal/entropy.py",
+    "line": 183,
+    "col": 8,
+    "end_line": 185,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "NP_RANDOM",
+    "function": "get_seeder_and_restorer",
+    "snippet": "if NP_RANDOM is None:\n    # Protect this from garbage-collection by adding it to global scope\n    NP_RANDOM = RANDOMS_TO_MANAGE[next(_RKEY)] = NumpyRandomWrapper()",
+    "why": "`if X is None: X = expensive()` is two bytecode-separated operations. Under free-threading N threads can all observe None and all run the initialiser. That duplicates side effects (open files, spawned threads, registered handles) and, worse, lets one thread publish an object that another thread is still mutating.",
+    "fix": "Guard with a module-level lock and re-check inside it, or precompute the value at import time, or use functools.cache (whose C implementation is atomic) when the initialiser is genuinely pure.",
+    "under_lock": false,
+    "extra": {
+     "assign_lines": [
+      185
+     ]
+    }
+   },
+   {
+    "rule": "FT103",
+    "name": "check-then-act-container",
+    "message": "`not in _callbacks` test followed by a mutation of `_callbacks`",
+    "path": "internal/observability.py",
+    "line": 288,
+    "col": 4,
+    "end_line": 289,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "_callbacks",
+    "function": "add_observability_callback",
+    "snippet": "if thread_id not in _callbacks:\n    _callbacks[thread_id] = []",
+    "why": "`if k not in cache: cache[k] = compute(k)` is not atomic. Two threads can both miss, both compute, and both store. If the stored object carries identity (a connection, a lock, a registry entry) callers end up holding different objects that were supposed to be the same one.",
+    "fix": "Use dict.setdefault() / collections.defaultdict, which are atomic at the C level, or hold a lock across the test and the mutation.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT103",
+    "name": "check-then-act-container",
+    "message": "`in _callbacks_all_threads` test followed by a mutation of `_callbacks_all_threads`",
+    "path": "internal/observability.py",
+    "line": 303,
+    "col": 4,
+    "end_line": 304,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "_callbacks_all_threads",
+    "function": "remove_observability_callback",
+    "snippet": "if f in _callbacks_all_threads:\n    _callbacks_all_threads.remove(f)",
+    "why": "`if k not in cache: cache[k] = compute(k)` is not atomic. Two threads can both miss, both compute, and both store. If the stored object carries identity (a connection, a lock, a registry entry) callers end up holding different objects that were supposed to be the same one.",
+    "fix": "Use dict.setdefault() / collections.defaultdict, which are atomic at the C level, or hold a lock across the test and the mutation.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "`sys.settrace()` mutates the interpreter trace hook",
+    "path": "internal/scrutineer.py",
+    "line": 117,
+    "col": 12,
+    "end_line": 117,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "sys.settrace",
+    "function": "Tracer.__enter__",
+    "snippet": "sys.settrace(self.trace)",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "`sys.settrace()` mutates the interpreter trace hook",
+    "path": "internal/scrutineer.py",
+    "line": 140,
+    "col": 12,
+    "end_line": 140,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "sys.settrace",
+    "function": "Tracer.__exit__",
+    "snippet": "sys.settrace(None)",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "warnings.catch_warnings() swaps the global warnings filter and is documented as not thread-safe",
+    "path": "strategies/_internal/core.py",
+    "line": 1325,
+    "col": 13,
+    "end_line": 1325,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "warnings.catch_warnings",
+    "function": "from_type",
+    "snippet": "with warnings.catch_warnings():",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "`warnings.simplefilter()` mutates the global warnings filter",
+    "path": "strategies/_internal/core.py",
+    "line": 1326,
+    "col": 12,
+    "end_line": 1326,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "warnings.simplefilter",
+    "function": "from_type",
+    "snippet": "warnings.simplefilter(\"error\")",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "warnings.catch_warnings() swaps the global warnings filter and is documented as not thread-safe",
+    "path": "strategies/_internal/core.py",
+    "line": 2595,
+    "col": 13,
+    "end_line": 2595,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "warnings.catch_warnings",
+    "function": "register_type_strategy",
+    "snippet": "with warnings.catch_warnings():",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "`warnings.simplefilter()` mutates the global warnings filter",
+    "path": "strategies/_internal/core.py",
+    "line": 2596,
+    "col": 12,
+    "end_line": 2596,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "warnings.simplefilter",
+    "function": "register_type_strategy",
+    "snippet": "warnings.simplefilter(\"error\", HypothesisSideeffectWarning)",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "warnings.catch_warnings() swaps the global warnings filter and is documented as not thread-safe",
+    "path": "strategies/_internal/datetime.py",
+    "line": 911,
+    "col": 9,
+    "end_line": 911,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "warnings.catch_warnings",
+    "function": "_timezone_key_strategies",
+    "snippet": "with warnings.catch_warnings():",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "`warnings.simplefilter()` mutates the global warnings filter",
+    "path": "strategies/_internal/datetime.py",
+    "line": 913,
+    "col": 12,
+    "end_line": 913,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "warnings.simplefilter",
+    "function": "_timezone_key_strategies",
+    "snippet": "warnings.simplefilter(\"ignore\", EncodingWarning)",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "warnings.catch_warnings() swaps the global warnings filter and is documented as not thread-safe",
+    "path": "strategies/_internal/strategies.py",
+    "line": 1117,
+    "col": 13,
+    "end_line": 1117,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "warnings.catch_warnings",
+    "function": "MappedStrategy.do_draw",
+    "snippet": "with warnings.catch_warnings():",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "`warnings.simplefilter()` mutates the global warnings filter",
+    "path": "strategies/_internal/strategies.py",
+    "line": 1121,
+    "col": 16,
+    "end_line": 1121,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "warnings.simplefilter",
+    "function": "MappedStrategy.do_draw",
+    "snippet": "warnings.simplefilter(\"ignore\", BytesWarning)",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "warnings.catch_warnings() swaps the global warnings filter and is documented as not thread-safe",
+    "path": "vendor/pretty.py",
+    "line": 831,
+    "col": 12,
+    "end_line": 831,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "warnings.catch_warnings",
+    "function": "_dict_pprinter_factory.inner",
+    "snippet": "warnings.catch_warnings(),",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "`warnings.simplefilter()` mutates the global warnings filter",
+    "path": "vendor/pretty.py",
+    "line": 833,
+    "col": 12,
+    "end_line": 833,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "warnings.simplefilter",
+    "function": "_dict_pprinter_factory.inner",
+    "snippet": "warnings.simplefilter(\"ignore\", BytesWarning)",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   }
+  ]
+ },
+ {
   "package": "matplotlib",
   "files": 140,
   "high": 23,
@@ -3973,7 +4564,7 @@
    "FT103": 2,
    "FT109": 1
   },
-  "duration_s": 1.31,
+  "duration_s": 1.37,
   "findings": [
    {
     "rule": "FT106",
@@ -4808,18 +5399,19 @@
  {
   "package": "numpy",
   "files": 166,
-  "high": 15,
+  "high": 18,
   "medium": 111,
   "low": 9,
-  "total": 135,
+  "total": 138,
   "by_rule": {
    "FT101": 67,
    "FT104": 50,
    "FT105": 12,
-   "FT106": 3,
-   "FT110": 3
+   "FT112": 4,
+   "FT110": 3,
+   "FT106": 2
   },
-  "duration_s": 0.7,
+  "duration_s": 0.73,
   "findings": [
    {
     "rule": "FT105",
@@ -5074,22 +5666,84 @@
     "extra": {}
    },
    {
-    "rule": "FT106",
-    "name": "process-global-mutation",
-    "message": "`np.seterr()` mutates numpy's global floating-point error state",
-    "path": "ma/core.py",
-    "line": 1071,
-    "col": 12,
-    "end_line": 1071,
+    "rule": "FT112",
+    "name": "native-ext-no-ft-declaration",
+    "message": "Cython module `_core/tests/examples/cython/checks.pyx` does not set `# cython: freethreading_compatible = True`",
+    "path": "_core/tests/examples/cython/checks.pyx",
+    "line": 8,
+    "col": 0,
+    "end_line": 8,
     "severity": "high",
-    "confidence": "high",
-    "symbol": "np.seterr",
-    "function": "_MaskedBinaryOperation.__call__",
-    "snippet": "np.seterr(divide='ignore', invalid='ignore')",
-    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
-    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "confidence": "medium",
+    "symbol": "_core/tests/examples/cython/checks.pyx",
+    "function": "<module definition>",
+    "snippet": "",
+    "why": "An extension module that does not set Py_mod_gil = Py_MOD_GIL_NOT_USED (or, for Cython, `# cython: freethreading_compatible=True`) makes CPython re-enable the GIL for the whole process at import time. One such dependency silently removes free-threading from every other library in the program.",
+    "fix": "Audit the extension for thread safety, then add the Py_mod_gil slot via multi-phase init (or the Cython directive) and ship a cp3XXt wheel.",
     "under_lock": false,
-    "extra": {}
+    "extra": {
+     "language": "cython"
+    }
+   },
+   {
+    "rule": "FT112",
+    "name": "native-ext-no-ft-declaration",
+    "message": "Cython module `_core/tests/examples/limited_api/limited_api_cython.pyx` does not set `# cython: freethreading_compatible = True`",
+    "path": "_core/tests/examples/limited_api/limited_api_cython.pyx",
+    "line": 9,
+    "col": 0,
+    "end_line": 9,
+    "severity": "high",
+    "confidence": "medium",
+    "symbol": "_core/tests/examples/limited_api/limited_api_cython.pyx",
+    "function": "<module definition>",
+    "snippet": "",
+    "why": "An extension module that does not set Py_mod_gil = Py_MOD_GIL_NOT_USED (or, for Cython, `# cython: freethreading_compatible=True`) makes CPython re-enable the GIL for the whole process at import time. One such dependency silently removes free-threading from every other library in the program.",
+    "fix": "Audit the extension for thread safety, then add the Py_mod_gil slot via multi-phase init (or the Cython directive) and ship a cp3XXt wheel.",
+    "under_lock": false,
+    "extra": {
+     "language": "cython"
+    }
+   },
+   {
+    "rule": "FT112",
+    "name": "native-ext-no-ft-declaration",
+    "message": "Cython module `random/_examples/cython/extending.pyx` does not set `# cython: freethreading_compatible = True`",
+    "path": "random/_examples/cython/extending.pyx",
+    "line": 3,
+    "col": 0,
+    "end_line": 3,
+    "severity": "high",
+    "confidence": "medium",
+    "symbol": "random/_examples/cython/extending.pyx",
+    "function": "<module definition>",
+    "snippet": "",
+    "why": "An extension module that does not set Py_mod_gil = Py_MOD_GIL_NOT_USED (or, for Cython, `# cython: freethreading_compatible=True`) makes CPython re-enable the GIL for the whole process at import time. One such dependency silently removes free-threading from every other library in the program.",
+    "fix": "Audit the extension for thread safety, then add the Py_mod_gil slot via multi-phase init (or the Cython directive) and ship a cp3XXt wheel.",
+    "under_lock": false,
+    "extra": {
+     "language": "cython"
+    }
+   },
+   {
+    "rule": "FT112",
+    "name": "native-ext-no-ft-declaration",
+    "message": "Cython module `random/_examples/cython/extending_distributions.pyx` does not set `# cython: freethreading_compatible = True`",
+    "path": "random/_examples/cython/extending_distributions.pyx",
+    "line": 6,
+    "col": 0,
+    "end_line": 6,
+    "severity": "high",
+    "confidence": "medium",
+    "symbol": "random/_examples/cython/extending_distributions.pyx",
+    "function": "<module definition>",
+    "snippet": "",
+    "why": "An extension module that does not set Py_mod_gil = Py_MOD_GIL_NOT_USED (or, for Cython, `# cython: freethreading_compatible=True`) makes CPython re-enable the GIL for the whole process at import time. One such dependency silently removes free-threading from every other library in the program.",
+    "fix": "Audit the extension for thread safety, then add the Py_mod_gil slot via multi-phase init (or the Cython directive) and ship a cp3XXt wheel.",
+    "under_lock": false,
+    "extra": {
+     "language": "cython"
+    }
    }
   ]
  },
@@ -5107,7 +5761,7 @@
    "FT103": 3,
    "FT102": 1
   },
-  "duration_s": 0.13,
+  "duration_s": 0.14,
   "findings": [
    {
     "rule": "FT103",
@@ -5333,6 +5987,241 @@
   ]
  },
  {
+  "package": "sqlalchemy",
+  "files": 218,
+  "high": 11,
+  "medium": 40,
+  "low": 4,
+  "total": 55,
+  "by_rule": {
+   "FT104": 27,
+   "FT110": 15,
+   "FT112": 5,
+   "FT103": 3,
+   "FT113": 2,
+   "FT102": 1,
+   "FT107": 1,
+   "FT105": 1
+  },
+  "duration_s": 1.58,
+  "findings": [
+   {
+    "rule": "FT103",
+    "name": "check-then-act-container",
+    "message": "`in _key_to_collection` test followed by a mutation of `_key_to_collection`",
+    "path": "event/registry.py",
+    "line": 113,
+    "col": 8,
+    "end_line": 118,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "_key_to_collection",
+    "function": "_collection_gced",
+    "snippet": "if key in _key_to_collection:\n    # defaultdict, so can't get a KeyError\n    dispatch_reg = _key_to_collection[key]\n    dispatch_reg.pop(ref)\n    if not dispatch_reg:\n        _key_to_collection.pop(key)",
+    "why": "`if k not in cache: cache[k] = compute(k)` is not atomic. Two threads can both miss, both compute, and both store. If the stored object carries identity (a connection, a lock, a registry entry) callers end up holding different objects that were supposed to be the same one.",
+    "fix": "Use dict.setdefault() / collections.defaultdict, which are atomic at the C level, or hold a lock across the test and the mutation.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT103",
+    "name": "check-then-act-container",
+    "message": "`in ExtendedInstrumentationRegistry._manager_finders` test followed by a mutation of `ExtendedInstrumentationRegistry._manager_finders`",
+    "path": "ext/instrumentation.py",
+    "line": 169,
+    "col": 8,
+    "end_line": 172,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "ExtendedInstrumentationRegistry._manager_finders",
+    "function": "ExtendedInstrumentationRegistry.unregister",
+    "snippet": "if class_ in self._manager_finders:\n    del self._manager_finders[class_]\n    del self._state_finders[class_]\n    del self._dict_finders[class_]",
+    "why": "`if k not in cache: cache[k] = compute(k)` is not atomic. Two threads can both miss, both compute, and both store. If the stored object carries identity (a connection, a lock, a registry entry) callers end up holding different objects that were supposed to be the same one.",
+    "fix": "Use dict.setdefault() / collections.defaultdict, which are atomic at the C level, or hold a lock across the test and the mutation.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT102",
+    "name": "lazy-init-race",
+    "message": "`_fallback_dict` is lazily initialised with an unsynchronised check-then-act",
+    "path": "orm/clsregistry.py",
+    "line": 552,
+    "col": 4,
+    "end_line": 559,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "_fallback_dict",
+    "function": "_resolver",
+    "snippet": "if _fallback_dict is None:\n    import sqlalchemy\n    from . import foreign\n    from . import remote\n\n    _fallback_dict = util.immutabledict(sqlalchemy.__dict__).union(\n        {\"foreign\": foreign, \"remote\": remote}",
+    "why": "`if X is None: X = expensive()` is two bytecode-separated operations. Under free-threading N threads can all observe None and all run the initialiser. That duplicates side effects (open files, spawned threads, registered handles) and, worse, lets one thread publish an object that another thread is still mutating.",
+    "fix": "Guard with a module-level lock and re-check inside it, or precompute the value at import time, or use functools.cache (whose C implementation is atomic) when the initialiser is genuinely pure.",
+    "under_lock": false,
+    "extra": {
+     "assign_lines": [
+      557
+     ]
+    }
+   },
+   {
+    "rule": "FT107",
+    "name": "save-mutate-restore",
+    "message": "`_already_compiling` is changed and then restored in a finally block",
+    "path": "orm/mapper.py",
+    "line": 4230,
+    "col": 0,
+    "end_line": 4230,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "_already_compiling",
+    "function": "_configure_registries",
+    "snippet": "_already_compiling = False",
+    "why": "The save/mutate/restore idiom is only correct if nothing else runs meanwhile. Under free-threading another thread executes inside the window and sees the temporary value; two threads doing it concurrently restore each other's saved value and leave the global permanently wrong.",
+    "fix": "Thread the value through as a parameter, or move it to a threading.local / contextvars.ContextVar so each thread has its own copy.",
+    "under_lock": false,
+    "extra": {
+     "first_assignment_line": 4213
+    }
+   },
+   {
+    "rule": "FT103",
+    "name": "check-then-act-container",
+    "message": "`not in JoinCondition._track_overlapping_sync_targets` test followed by a mutation of `JoinCondition._track_overlapping_sync_targets`",
+    "path": "orm/relationships.py",
+    "line": 3146,
+    "col": 12,
+    "end_line": 3209,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "JoinCondition._track_overlapping_sync_targets",
+    "function": "JoinCondition._warn_for_conflicting_sync_targets",
+    "snippet": "if to_ not in self._track_overlapping_sync_targets:\n    self._track_overlapping_sync_targets[to_] = (\n        weakref.WeakKeyDictionary({self.prop: from_})\n    )\nelse:\n    other_props = []\n    prop_to_from = self._track_overlapping_sync_targets[to_]",
+    "why": "`if k not in cache: cache[k] = compute(k)` is not atomic. Two threads can both miss, both compute, and both store. If the stored object carries identity (a connection, a lock, a registry entry) callers end up holding different objects that were supposed to be the same one.",
+    "fix": "Use dict.setdefault() / collections.defaultdict, which are atomic at the C level, or hold a lock across the test and the mutation.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT105",
+    "name": "read-modify-write",
+    "message": "`_creation_order +=` is a non-atomic read-modify-write on shared state",
+    "path": "util/langhelpers.py",
+    "line": 1741,
+    "col": 4,
+    "end_line": 1741,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "_creation_order",
+    "function": "set_creation_order",
+    "snippet": "_creation_order += 1",
+    "why": "`counter += 1` compiles to LOAD / BINARY_OP / STORE. With the GIL these rarely interleaved; without it they interleave constantly and increments are silently lost. This is the single most reproducible free-threading bug.",
+    "fix": "Use itertools.count().__next__, a lock, or move the counter into per-thread state and aggregate at the end.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT112",
+    "name": "native-ext-no-ft-declaration",
+    "message": "Cython module `cyextension/collections.pyx` does not set `# cython: freethreading_compatible = True`",
+    "path": "cyextension/collections.pyx",
+    "line": 7,
+    "col": 0,
+    "end_line": 7,
+    "severity": "high",
+    "confidence": "medium",
+    "symbol": "cyextension/collections.pyx",
+    "function": "<module definition>",
+    "snippet": "",
+    "why": "An extension module that does not set Py_mod_gil = Py_MOD_GIL_NOT_USED (or, for Cython, `# cython: freethreading_compatible=True`) makes CPython re-enable the GIL for the whole process at import time. One such dependency silently removes free-threading from every other library in the program.",
+    "fix": "Audit the extension for thread safety, then add the Py_mod_gil slot via multi-phase init (or the Cython directive) and ship a cp3XXt wheel.",
+    "under_lock": false,
+    "extra": {
+     "language": "cython"
+    }
+   },
+   {
+    "rule": "FT112",
+    "name": "native-ext-no-ft-declaration",
+    "message": "Cython module `cyextension/immutabledict.pyx` does not set `# cython: freethreading_compatible = True`",
+    "path": "cyextension/immutabledict.pyx",
+    "line": 7,
+    "col": 0,
+    "end_line": 7,
+    "severity": "high",
+    "confidence": "medium",
+    "symbol": "cyextension/immutabledict.pyx",
+    "function": "<module definition>",
+    "snippet": "",
+    "why": "An extension module that does not set Py_mod_gil = Py_MOD_GIL_NOT_USED (or, for Cython, `# cython: freethreading_compatible=True`) makes CPython re-enable the GIL for the whole process at import time. One such dependency silently removes free-threading from every other library in the program.",
+    "fix": "Audit the extension for thread safety, then add the Py_mod_gil slot via multi-phase init (or the Cython directive) and ship a cp3XXt wheel.",
+    "under_lock": false,
+    "extra": {
+     "language": "cython"
+    }
+   },
+   {
+    "rule": "FT112",
+    "name": "native-ext-no-ft-declaration",
+    "message": "Cython module `cyextension/processors.pyx` does not set `# cython: freethreading_compatible = True`",
+    "path": "cyextension/processors.pyx",
+    "line": 13,
+    "col": 0,
+    "end_line": 13,
+    "severity": "high",
+    "confidence": "medium",
+    "symbol": "cyextension/processors.pyx",
+    "function": "<module definition>",
+    "snippet": "",
+    "why": "An extension module that does not set Py_mod_gil = Py_MOD_GIL_NOT_USED (or, for Cython, `# cython: freethreading_compatible=True`) makes CPython re-enable the GIL for the whole process at import time. One such dependency silently removes free-threading from every other library in the program.",
+    "fix": "Audit the extension for thread safety, then add the Py_mod_gil slot via multi-phase init (or the Cython directive) and ship a cp3XXt wheel.",
+    "under_lock": false,
+    "extra": {
+     "language": "cython"
+    }
+   },
+   {
+    "rule": "FT112",
+    "name": "native-ext-no-ft-declaration",
+    "message": "Cython module `cyextension/resultproxy.pyx` does not set `# cython: freethreading_compatible = True`",
+    "path": "cyextension/resultproxy.pyx",
+    "line": 9,
+    "col": 0,
+    "end_line": 9,
+    "severity": "high",
+    "confidence": "medium",
+    "symbol": "cyextension/resultproxy.pyx",
+    "function": "<module definition>",
+    "snippet": "",
+    "why": "An extension module that does not set Py_mod_gil = Py_MOD_GIL_NOT_USED (or, for Cython, `# cython: freethreading_compatible=True`) makes CPython re-enable the GIL for the whole process at import time. One such dependency silently removes free-threading from every other library in the program.",
+    "fix": "Audit the extension for thread safety, then add the Py_mod_gil slot via multi-phase init (or the Cython directive) and ship a cp3XXt wheel.",
+    "under_lock": false,
+    "extra": {
+     "language": "cython"
+    }
+   },
+   {
+    "rule": "FT112",
+    "name": "native-ext-no-ft-declaration",
+    "message": "Cython module `cyextension/util.pyx` does not set `# cython: freethreading_compatible = True`",
+    "path": "cyextension/util.pyx",
+    "line": 11,
+    "col": 0,
+    "end_line": 11,
+    "severity": "high",
+    "confidence": "medium",
+    "symbol": "cyextension/util.pyx",
+    "function": "<module definition>",
+    "snippet": "",
+    "why": "An extension module that does not set Py_mod_gil = Py_MOD_GIL_NOT_USED (or, for Cython, `# cython: freethreading_compatible=True`) makes CPython re-enable the GIL for the whole process at import time. One such dependency silently removes free-threading from every other library in the program.",
+    "fix": "Audit the extension for thread safety, then add the Py_mod_gil slot via multi-phase init (or the Cython directive) and ship a cp3XXt wheel.",
+    "under_lock": false,
+    "extra": {
+     "language": "cython"
+    }
+   }
+  ]
+ },
+ {
   "package": "pydantic",
   "files": 105,
   "high": 11,
@@ -5347,7 +6236,7 @@
    "FT101": 1,
    "FT107": 1
   },
-  "duration_s": 0.52,
+  "duration_s": 0.45,
   "findings": [
    {
     "rule": "FT106",
@@ -5590,7 +6479,7 @@
    "FT105": 2,
    "FT102": 1
   },
-  "duration_s": 0.17,
+  "duration_s": 0.15,
   "findings": [
    {
     "rule": "FT106",
@@ -5785,6 +6674,197 @@
   ]
  },
  {
+  "package": "aiohttp",
+  "files": 54,
+  "high": 9,
+  "medium": 4,
+  "low": 0,
+  "total": 13,
+  "by_rule": {
+   "FT106": 4,
+   "FT112": 3,
+   "FT101": 2,
+   "FT110": 2,
+   "FT103": 1,
+   "FT102": 1
+  },
+  "duration_s": 0.27,
+  "findings": [
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "warnings.catch_warnings() swaps the global warnings filter and is documented as not thread-safe",
+    "path": "multipart.py",
+    "line": 439,
+    "col": 17,
+    "end_line": 439,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "warnings.catch_warnings",
+    "function": "BodyPartReader._read_chunk_from_stream",
+    "snippet": "with warnings.catch_warnings():",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "`warnings.filterwarnings()` mutates the global warnings filter",
+    "path": "multipart.py",
+    "line": 440,
+    "col": 16,
+    "end_line": 440,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "warnings.filterwarnings",
+    "function": "BodyPartReader._read_chunk_from_stream",
+    "snippet": "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "warnings.catch_warnings() swaps the global warnings filter and is documented as not thread-safe",
+    "path": "pytest_plugin.py",
+    "line": 159,
+    "col": 9,
+    "end_line": 159,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "warnings.catch_warnings",
+    "function": "_runtime_warning_context",
+    "snippet": "with warnings.catch_warnings(record=True) as _warnings:",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT103",
+    "name": "check-then-act-container",
+    "message": "`AccessLogger._FORMAT_CACHE.get(...)` miss followed by an unsynchronised store into `AccessLogger._FORMAT_CACHE`",
+    "path": "web_log.py",
+    "line": 79,
+    "col": 8,
+    "end_line": 81,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "AccessLogger._FORMAT_CACHE",
+    "function": "AccessLogger.__init__",
+    "snippet": "if not _compiled_format:\n    _compiled_format = self.compile_format(log_format)\n    AccessLogger._FORMAT_CACHE[log_format] = _compiled_format",
+    "why": "`if k not in cache: cache[k] = compute(k)` is not atomic. Two threads can both miss, both compute, and both store. If the stored object carries identity (a connection, a lock, a registry entry) callers end up holding different objects that were supposed to be the same one.",
+    "fix": "Use dict.setdefault() / collections.defaultdict, which are atomic at the C level, or hold a lock across the test and the mutation.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT102",
+    "name": "lazy-init-race",
+    "message": "`AccessLogger._cached_tz` is lazily initialised with an unsynchronised check-then-act",
+    "path": "web_log.py",
+    "line": 152,
+    "col": 8,
+    "end_line": 161,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "AccessLogger._cached_tz",
+    "function": "AccessLogger._get_local_time",
+    "snippet": "if cls._cached_tz is None or time_mod.time() >= cls._cached_tz_expires:\n    gmtoff = time_mod.localtime().tm_gmtoff\n    cls._cached_tz = tz = datetime.timezone(datetime.timedelta(seconds=gmtoff))\n\n    now = datetime.datetime.now(tz)\n    # Expire at every 30 mins, as any DST change should occur at 0/30 mins past.\n    d = now + datetime.timedelta(minutes=30)",
+    "why": "`if X is None: X = expensive()` is two bytecode-separated operations. Under free-threading N threads can all observe None and all run the initialiser. That duplicates side effects (open files, spawned threads, registered handles) and, worse, lets one thread publish an object that another thread is still mutating.",
+    "fix": "Guard with a module-level lock and re-check inside it, or precompute the value at import time, or use functools.cache (whose C implementation is atomic) when the initialiser is genuinely pure.",
+    "under_lock": false,
+    "extra": {
+     "assign_lines": [
+      154
+     ]
+    }
+   },
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "`signal.signal()` mutates process signal handlers",
+    "path": "worker.py",
+    "line": 211,
+    "col": 8,
+    "end_line": 211,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "signal.signal",
+    "function": "GunicornWebWorker.init_signals",
+    "snippet": "signal.signal(signal.SIGCHLD, signal.SIG_DFL)",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT112",
+    "name": "native-ext-no-ft-declaration",
+    "message": "Cython module `_http_parser.pyx` does not set `# cython: freethreading_compatible = True`",
+    "path": "_http_parser.pyx",
+    "line": 4,
+    "col": 0,
+    "end_line": 4,
+    "severity": "high",
+    "confidence": "medium",
+    "symbol": "_http_parser.pyx",
+    "function": "<module definition>",
+    "snippet": "",
+    "why": "An extension module that does not set Py_mod_gil = Py_MOD_GIL_NOT_USED (or, for Cython, `# cython: freethreading_compatible=True`) makes CPython re-enable the GIL for the whole process at import time. One such dependency silently removes free-threading from every other library in the program.",
+    "fix": "Audit the extension for thread safety, then add the Py_mod_gil slot via multi-phase init (or the Cython directive) and ship a cp3XXt wheel.",
+    "under_lock": false,
+    "extra": {
+     "language": "cython"
+    }
+   },
+   {
+    "rule": "FT112",
+    "name": "native-ext-no-ft-declaration",
+    "message": "Cython module `_http_writer.pyx` does not set `# cython: freethreading_compatible = True`",
+    "path": "_http_writer.pyx",
+    "line": 1,
+    "col": 0,
+    "end_line": 1,
+    "severity": "high",
+    "confidence": "medium",
+    "symbol": "_http_writer.pyx",
+    "function": "<module definition>",
+    "snippet": "",
+    "why": "An extension module that does not set Py_mod_gil = Py_MOD_GIL_NOT_USED (or, for Cython, `# cython: freethreading_compatible=True`) makes CPython re-enable the GIL for the whole process at import time. One such dependency silently removes free-threading from every other library in the program.",
+    "fix": "Audit the extension for thread safety, then add the Py_mod_gil slot via multi-phase init (or the Cython directive) and ship a cp3XXt wheel.",
+    "under_lock": false,
+    "extra": {
+     "language": "cython"
+    }
+   },
+   {
+    "rule": "FT112",
+    "name": "native-ext-no-ft-declaration",
+    "message": "Cython module `_websocket/mask.pyx` does not set `# cython: freethreading_compatible = True`",
+    "path": "_websocket/mask.pyx",
+    "line": 1,
+    "col": 0,
+    "end_line": 1,
+    "severity": "high",
+    "confidence": "medium",
+    "symbol": "_websocket/mask.pyx",
+    "function": "<module definition>",
+    "snippet": "",
+    "why": "An extension module that does not set Py_mod_gil = Py_MOD_GIL_NOT_USED (or, for Cython, `# cython: freethreading_compatible=True`) makes CPython re-enable the GIL for the whole process at import time. One such dependency silently removes free-threading from every other library in the program.",
+    "fix": "Audit the extension for thread safety, then add the Py_mod_gil slot via multi-phase init (or the Cython directive) and ship a cp3XXt wheel.",
+    "under_lock": false,
+    "extra": {
+     "language": "cython"
+    }
+   }
+  ]
+ },
+ {
   "package": "click",
   "files": 17,
   "high": 7,
@@ -5934,140 +7014,6 @@
   ]
  },
  {
-  "package": "sqlalchemy",
-  "files": 218,
-  "high": 6,
-  "medium": 40,
-  "low": 4,
-  "total": 50,
-  "by_rule": {
-   "FT104": 27,
-   "FT110": 15,
-   "FT103": 3,
-   "FT113": 2,
-   "FT102": 1,
-   "FT107": 1,
-   "FT105": 1
-  },
-  "duration_s": 1.47,
-  "findings": [
-   {
-    "rule": "FT103",
-    "name": "check-then-act-container",
-    "message": "`in _key_to_collection` test followed by a mutation of `_key_to_collection`",
-    "path": "event/registry.py",
-    "line": 113,
-    "col": 8,
-    "end_line": 118,
-    "severity": "high",
-    "confidence": "high",
-    "symbol": "_key_to_collection",
-    "function": "_collection_gced",
-    "snippet": "if key in _key_to_collection:\n    # defaultdict, so can't get a KeyError\n    dispatch_reg = _key_to_collection[key]\n    dispatch_reg.pop(ref)\n    if not dispatch_reg:\n        _key_to_collection.pop(key)",
-    "why": "`if k not in cache: cache[k] = compute(k)` is not atomic. Two threads can both miss, both compute, and both store. If the stored object carries identity (a connection, a lock, a registry entry) callers end up holding different objects that were supposed to be the same one.",
-    "fix": "Use dict.setdefault() / collections.defaultdict, which are atomic at the C level, or hold a lock across the test and the mutation.",
-    "under_lock": false,
-    "extra": {}
-   },
-   {
-    "rule": "FT103",
-    "name": "check-then-act-container",
-    "message": "`in ExtendedInstrumentationRegistry._manager_finders` test followed by a mutation of `ExtendedInstrumentationRegistry._manager_finders`",
-    "path": "ext/instrumentation.py",
-    "line": 169,
-    "col": 8,
-    "end_line": 172,
-    "severity": "high",
-    "confidence": "high",
-    "symbol": "ExtendedInstrumentationRegistry._manager_finders",
-    "function": "ExtendedInstrumentationRegistry.unregister",
-    "snippet": "if class_ in self._manager_finders:\n    del self._manager_finders[class_]\n    del self._state_finders[class_]\n    del self._dict_finders[class_]",
-    "why": "`if k not in cache: cache[k] = compute(k)` is not atomic. Two threads can both miss, both compute, and both store. If the stored object carries identity (a connection, a lock, a registry entry) callers end up holding different objects that were supposed to be the same one.",
-    "fix": "Use dict.setdefault() / collections.defaultdict, which are atomic at the C level, or hold a lock across the test and the mutation.",
-    "under_lock": false,
-    "extra": {}
-   },
-   {
-    "rule": "FT102",
-    "name": "lazy-init-race",
-    "message": "`_fallback_dict` is lazily initialised with an unsynchronised check-then-act",
-    "path": "orm/clsregistry.py",
-    "line": 552,
-    "col": 4,
-    "end_line": 559,
-    "severity": "high",
-    "confidence": "high",
-    "symbol": "_fallback_dict",
-    "function": "_resolver",
-    "snippet": "if _fallback_dict is None:\n    import sqlalchemy\n    from . import foreign\n    from . import remote\n\n    _fallback_dict = util.immutabledict(sqlalchemy.__dict__).union(\n        {\"foreign\": foreign, \"remote\": remote}",
-    "why": "`if X is None: X = expensive()` is two bytecode-separated operations. Under free-threading N threads can all observe None and all run the initialiser. That duplicates side effects (open files, spawned threads, registered handles) and, worse, lets one thread publish an object that another thread is still mutating.",
-    "fix": "Guard with a module-level lock and re-check inside it, or precompute the value at import time, or use functools.cache (whose C implementation is atomic) when the initialiser is genuinely pure.",
-    "under_lock": false,
-    "extra": {
-     "assign_lines": [
-      557
-     ]
-    }
-   },
-   {
-    "rule": "FT107",
-    "name": "save-mutate-restore",
-    "message": "`_already_compiling` is changed and then restored in a finally block",
-    "path": "orm/mapper.py",
-    "line": 4230,
-    "col": 0,
-    "end_line": 4230,
-    "severity": "high",
-    "confidence": "high",
-    "symbol": "_already_compiling",
-    "function": "_configure_registries",
-    "snippet": "_already_compiling = False",
-    "why": "The save/mutate/restore idiom is only correct if nothing else runs meanwhile. Under free-threading another thread executes inside the window and sees the temporary value; two threads doing it concurrently restore each other's saved value and leave the global permanently wrong.",
-    "fix": "Thread the value through as a parameter, or move it to a threading.local / contextvars.ContextVar so each thread has its own copy.",
-    "under_lock": false,
-    "extra": {
-     "first_assignment_line": 4213
-    }
-   },
-   {
-    "rule": "FT103",
-    "name": "check-then-act-container",
-    "message": "`not in JoinCondition._track_overlapping_sync_targets` test followed by a mutation of `JoinCondition._track_overlapping_sync_targets`",
-    "path": "orm/relationships.py",
-    "line": 3146,
-    "col": 12,
-    "end_line": 3209,
-    "severity": "high",
-    "confidence": "high",
-    "symbol": "JoinCondition._track_overlapping_sync_targets",
-    "function": "JoinCondition._warn_for_conflicting_sync_targets",
-    "snippet": "if to_ not in self._track_overlapping_sync_targets:\n    self._track_overlapping_sync_targets[to_] = (\n        weakref.WeakKeyDictionary({self.prop: from_})\n    )\nelse:\n    other_props = []\n    prop_to_from = self._track_overlapping_sync_targets[to_]",
-    "why": "`if k not in cache: cache[k] = compute(k)` is not atomic. Two threads can both miss, both compute, and both store. If the stored object carries identity (a connection, a lock, a registry entry) callers end up holding different objects that were supposed to be the same one.",
-    "fix": "Use dict.setdefault() / collections.defaultdict, which are atomic at the C level, or hold a lock across the test and the mutation.",
-    "under_lock": false,
-    "extra": {}
-   },
-   {
-    "rule": "FT105",
-    "name": "read-modify-write",
-    "message": "`_creation_order +=` is a non-atomic read-modify-write on shared state",
-    "path": "util/langhelpers.py",
-    "line": 1741,
-    "col": 4,
-    "end_line": 1741,
-    "severity": "high",
-    "confidence": "high",
-    "symbol": "_creation_order",
-    "function": "set_creation_order",
-    "snippet": "_creation_order += 1",
-    "why": "`counter += 1` compiles to LOAD / BINARY_OP / STORE. With the GIL these rarely interleaved; without it they interleave constantly and increments are silently lost. This is the single most reproducible free-threading bug.",
-    "fix": "Use itertools.count().__next__, a lock, or move the counter into per-thread state and aggregate at the end.",
-    "under_lock": false,
-    "extra": {}
-   }
-  ]
- },
- {
   "package": "networkx",
   "files": 287,
   "high": 6,
@@ -6080,7 +7026,7 @@
    "FT110": 4,
    "FT105": 1
   },
-  "duration_s": 0.85,
+  "duration_s": 0.86,
   "findings": [
    {
     "rule": "FT106",
@@ -6187,136 +7133,6 @@
     "snippet": "cls.__count += 1",
     "why": "`counter += 1` compiles to LOAD / BINARY_OP / STORE. With the GIL these rarely interleaved; without it they interleave constantly and increments are silently lost. This is the single most reproducible free-threading bug.",
     "fix": "Use itertools.count().__next__, a lock, or move the counter into per-thread state and aggregate at the end.",
-    "under_lock": false,
-    "extra": {}
-   }
-  ]
- },
- {
-  "package": "aiohttp",
-  "files": 54,
-  "high": 6,
-  "medium": 4,
-  "low": 0,
-  "total": 10,
-  "by_rule": {
-   "FT106": 4,
-   "FT101": 2,
-   "FT110": 2,
-   "FT103": 1,
-   "FT102": 1
-  },
-  "duration_s": 0.27,
-  "findings": [
-   {
-    "rule": "FT106",
-    "name": "process-global-mutation",
-    "message": "warnings.catch_warnings() swaps the global warnings filter and is documented as not thread-safe",
-    "path": "multipart.py",
-    "line": 439,
-    "col": 17,
-    "end_line": 439,
-    "severity": "high",
-    "confidence": "high",
-    "symbol": "warnings.catch_warnings",
-    "function": "BodyPartReader._read_chunk_from_stream",
-    "snippet": "with warnings.catch_warnings():",
-    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
-    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
-    "under_lock": false,
-    "extra": {}
-   },
-   {
-    "rule": "FT106",
-    "name": "process-global-mutation",
-    "message": "`warnings.filterwarnings()` mutates the global warnings filter",
-    "path": "multipart.py",
-    "line": 440,
-    "col": 16,
-    "end_line": 440,
-    "severity": "high",
-    "confidence": "high",
-    "symbol": "warnings.filterwarnings",
-    "function": "BodyPartReader._read_chunk_from_stream",
-    "snippet": "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)",
-    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
-    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
-    "under_lock": false,
-    "extra": {}
-   },
-   {
-    "rule": "FT106",
-    "name": "process-global-mutation",
-    "message": "warnings.catch_warnings() swaps the global warnings filter and is documented as not thread-safe",
-    "path": "pytest_plugin.py",
-    "line": 159,
-    "col": 9,
-    "end_line": 159,
-    "severity": "high",
-    "confidence": "high",
-    "symbol": "warnings.catch_warnings",
-    "function": "_runtime_warning_context",
-    "snippet": "with warnings.catch_warnings(record=True) as _warnings:",
-    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
-    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
-    "under_lock": false,
-    "extra": {}
-   },
-   {
-    "rule": "FT103",
-    "name": "check-then-act-container",
-    "message": "`AccessLogger._FORMAT_CACHE.get(...)` miss followed by an unsynchronised store into `AccessLogger._FORMAT_CACHE`",
-    "path": "web_log.py",
-    "line": 79,
-    "col": 8,
-    "end_line": 81,
-    "severity": "high",
-    "confidence": "high",
-    "symbol": "AccessLogger._FORMAT_CACHE",
-    "function": "AccessLogger.__init__",
-    "snippet": "if not _compiled_format:\n    _compiled_format = self.compile_format(log_format)\n    AccessLogger._FORMAT_CACHE[log_format] = _compiled_format",
-    "why": "`if k not in cache: cache[k] = compute(k)` is not atomic. Two threads can both miss, both compute, and both store. If the stored object carries identity (a connection, a lock, a registry entry) callers end up holding different objects that were supposed to be the same one.",
-    "fix": "Use dict.setdefault() / collections.defaultdict, which are atomic at the C level, or hold a lock across the test and the mutation.",
-    "under_lock": false,
-    "extra": {}
-   },
-   {
-    "rule": "FT102",
-    "name": "lazy-init-race",
-    "message": "`AccessLogger._cached_tz` is lazily initialised with an unsynchronised check-then-act",
-    "path": "web_log.py",
-    "line": 152,
-    "col": 8,
-    "end_line": 161,
-    "severity": "high",
-    "confidence": "high",
-    "symbol": "AccessLogger._cached_tz",
-    "function": "AccessLogger._get_local_time",
-    "snippet": "if cls._cached_tz is None or time_mod.time() >= cls._cached_tz_expires:\n    gmtoff = time_mod.localtime().tm_gmtoff\n    cls._cached_tz = tz = datetime.timezone(datetime.timedelta(seconds=gmtoff))\n\n    now = datetime.datetime.now(tz)\n    # Expire at every 30 mins, as any DST change should occur at 0/30 mins past.\n    d = now + datetime.timedelta(minutes=30)",
-    "why": "`if X is None: X = expensive()` is two bytecode-separated operations. Under free-threading N threads can all observe None and all run the initialiser. That duplicates side effects (open files, spawned threads, registered handles) and, worse, lets one thread publish an object that another thread is still mutating.",
-    "fix": "Guard with a module-level lock and re-check inside it, or precompute the value at import time, or use functools.cache (whose C implementation is atomic) when the initialiser is genuinely pure.",
-    "under_lock": false,
-    "extra": {
-     "assign_lines": [
-      154
-     ]
-    }
-   },
-   {
-    "rule": "FT106",
-    "name": "process-global-mutation",
-    "message": "`signal.signal()` mutates process signal handlers",
-    "path": "worker.py",
-    "line": 211,
-    "col": 8,
-    "end_line": 211,
-    "severity": "high",
-    "confidence": "high",
-    "symbol": "signal.signal",
-    "function": "GunicornWebWorker.init_signals",
-    "snippet": "signal.signal(signal.SIGCHLD, signal.SIG_DFL)",
-    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
-    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
     "under_lock": false,
     "extra": {}
    }
@@ -6436,6 +7252,118 @@
   ]
  },
  {
+  "package": "cffi",
+  "files": 20,
+  "high": 5,
+  "medium": 6,
+  "low": 6,
+  "total": 17,
+  "by_rule": {
+   "FT104": 7,
+   "FT106": 4,
+   "FT110": 4,
+   "FT102": 1,
+   "FT101": 1
+  },
+  "duration_s": 0.11,
+  "findings": [
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "assigning into `sys.path` mutates the interpreter import path",
+    "path": "_cffi_gen_src.py",
+    "line": 92,
+    "col": 8,
+    "end_line": 92,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "sys.path",
+    "function": "find_ffi_in_python_script",
+    "snippet": "sys.path[:] = old_path",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT102",
+    "name": "lazy-init-race",
+    "message": "`_parser_cache` is lazily initialised with an unsynchronised check-then-act",
+    "path": "cparser.py",
+    "line": 52,
+    "col": 4,
+    "end_line": 53,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "_parser_cache",
+    "function": "_get_parser",
+    "snippet": "if _parser_cache is None:\n    _parser_cache = pycparser.CParser()",
+    "why": "`if X is None: X = expensive()` is two bytecode-separated operations. Under free-threading N threads can all observe None and all run the initialiser. That duplicates side effects (open files, spawned threads, registered handles) and, worse, lets one thread publish an object that another thread is still mutating.",
+    "fix": "Guard with a module-level lock and re-check inside it, or precompute the value at import time, or use functools.cache (whose C implementation is atomic) when the initialiser is genuinely pure.",
+    "under_lock": false,
+    "extra": {
+     "assign_lines": [
+      53
+     ]
+    }
+   },
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "assigning into `os.environ` mutates the process environment",
+    "path": "ffiplatform.py",
+    "line": 27,
+    "col": 16,
+    "end_line": 27,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "os.environ",
+    "function": "compile",
+    "snippet": "os.environ[key] = value",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "`os.chdir()` mutates the process working directory",
+    "path": "recompiler.py",
+    "line": 1568,
+    "col": 16,
+    "end_line": 1568,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "os.chdir",
+    "function": "recompile",
+    "snippet": "os.chdir(tmpdir)",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "`os.chdir()` mutates the process working directory",
+    "path": "recompiler.py",
+    "line": 1572,
+    "col": 16,
+    "end_line": 1572,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "os.chdir",
+    "function": "recompile",
+    "snippet": "os.chdir(cwd)",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   }
+  ]
+ },
+ {
   "package": "yaml",
   "files": 17,
   "high": 5,
@@ -6447,7 +7375,7 @@
    "FT105": 5,
    "FT110": 1
   },
-  "duration_s": 0.07,
+  "duration_s": 0.09,
   "findings": [
    {
     "rule": "FT105",
@@ -6554,7 +7482,7 @@
    "FT103": 3,
    "FT102": 1
   },
-  "duration_s": 0.53,
+  "duration_s": 0.57,
   "findings": [
    {
     "rule": "FT103",
@@ -6727,6 +7655,99 @@
   ]
  },
  {
+  "package": "lxml",
+  "files": 29,
+  "high": 4,
+  "medium": 2,
+  "low": 0,
+  "total": 6,
+  "by_rule": {
+   "FT104": 2,
+   "FT112": 2,
+   "FT106": 1,
+   "FT105": 1
+  },
+  "duration_s": 0.09,
+  "findings": [
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "deleting from `sys.modules` mutates the interpreter module table",
+    "path": "doctestcompare.py",
+    "line": 439,
+    "col": 12,
+    "end_line": 439,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "sys.modules",
+    "function": "_RestoreChecker.uninstall_module",
+    "snippet": "del sys.modules[self.del_module]",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT105",
+    "name": "read-modify-write",
+    "message": "`HtmlDiff._default_prefix +=` is a non-atomic read-modify-write on shared state",
+    "path": "html/_difflib.py",
+    "line": 1949,
+    "col": 8,
+    "end_line": 1949,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "HtmlDiff._default_prefix",
+    "function": "HtmlDiff._make_prefix",
+    "snippet": "HtmlDiff._default_prefix += 1",
+    "why": "`counter += 1` compiles to LOAD / BINARY_OP / STORE. With the GIL these rarely interleaved; without it they interleave constantly and increments are silently lost. This is the single most reproducible free-threading bug.",
+    "fix": "Use itertools.count().__next__, a lock, or move the counter into per-thread state and aggregate at the end.",
+    "under_lock": false,
+    "extra": {}
+   },
+   {
+    "rule": "FT112",
+    "name": "native-ext-no-ft-declaration",
+    "message": "Cython module `etree.pyx` does not set `# cython: freethreading_compatible = True`",
+    "path": "etree.pyx",
+    "line": 48,
+    "col": 0,
+    "end_line": 48,
+    "severity": "high",
+    "confidence": "medium",
+    "symbol": "etree.pyx",
+    "function": "<module definition>",
+    "snippet": "",
+    "why": "An extension module that does not set Py_mod_gil = Py_MOD_GIL_NOT_USED (or, for Cython, `# cython: freethreading_compatible=True`) makes CPython re-enable the GIL for the whole process at import time. One such dependency silently removes free-threading from every other library in the program.",
+    "fix": "Audit the extension for thread safety, then add the Py_mod_gil slot via multi-phase init (or the Cython directive) and ship a cp3XXt wheel.",
+    "under_lock": false,
+    "extra": {
+     "language": "cython"
+    }
+   },
+   {
+    "rule": "FT112",
+    "name": "native-ext-no-ft-declaration",
+    "message": "Cython module `objectify.pyx` does not set `# cython: freethreading_compatible = True`",
+    "path": "objectify.pyx",
+    "line": 10,
+    "col": 0,
+    "end_line": 10,
+    "severity": "high",
+    "confidence": "medium",
+    "symbol": "objectify.pyx",
+    "function": "<module definition>",
+    "snippet": "",
+    "why": "An extension module that does not set Py_mod_gil = Py_MOD_GIL_NOT_USED (or, for Cython, `# cython: freethreading_compatible=True`) makes CPython re-enable the GIL for the whole process at import time. One such dependency silently removes free-threading from every other library in the program.",
+    "fix": "Audit the extension for thread safety, then add the Py_mod_gil slot via multi-phase init (or the Cython directive) and ship a cp3XXt wheel.",
+    "under_lock": false,
+    "extra": {
+     "language": "cython"
+    }
+   }
+  ]
+ },
+ {
   "package": "werkzeug",
   "files": 52,
   "high": 4,
@@ -6739,7 +7760,7 @@
    "FT101": 1,
    "FT104": 1
   },
-  "duration_s": 0.19,
+  "duration_s": 0.22,
   "findings": [
    {
     "rule": "FT102",
@@ -6837,7 +7858,7 @@
    "FT103": 1,
    "FT114": 1
   },
-  "duration_s": 0.38,
+  "duration_s": 0.39,
   "findings": [
    {
     "rule": "FT102",
@@ -6918,7 +7939,7 @@
    "FT110": 4,
    "FT103": 3
   },
-  "duration_s": 0.71,
+  "duration_s": 0.7,
   "findings": [
    {
     "rule": "FT103",
@@ -6988,7 +8009,7 @@
    "FT106": 1,
    "FT101": 1
   },
-  "duration_s": 0.11,
+  "duration_s": 0.12,
   "findings": [
    {
     "rule": "FT106",
@@ -7139,7 +8160,7 @@
    "FT114": 1,
    "FT109": 1
   },
-  "duration_s": 0.13,
+  "duration_s": 0.11,
   "findings": [
    {
     "rule": "FT105",
@@ -7239,52 +8260,51 @@
   ]
  },
  {
-  "package": "lxml",
-  "files": 29,
+  "package": "watchdog",
+  "files": 25,
   "high": 2,
-  "medium": 2,
+  "medium": 1,
   "low": 0,
-  "total": 4,
+  "total": 3,
   "by_rule": {
-   "FT104": 2,
-   "FT106": 1,
-   "FT105": 1
+   "FT106": 2,
+   "FT104": 1
   },
-  "duration_s": 0.09,
+  "duration_s": 0.06,
   "findings": [
    {
     "rule": "FT106",
     "name": "process-global-mutation",
-    "message": "deleting from `sys.modules` mutates the interpreter module table",
-    "path": "doctestcompare.py",
-    "line": 439,
+    "message": "`signal.signal()` mutates process signal handlers",
+    "path": "watchmedo.py",
+    "line": 739,
     "col": 12,
-    "end_line": 439,
+    "end_line": 739,
     "severity": "high",
     "confidence": "high",
-    "symbol": "sys.modules",
-    "function": "_RestoreChecker.uninstall_module",
-    "snippet": "del sys.modules[self.del_module]",
+    "symbol": "signal.signal",
+    "function": "auto_restart.handler_termination_signal",
+    "snippet": "signal.signal(signum, signal.SIG_IGN)",
     "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
     "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
     "under_lock": false,
     "extra": {}
    },
    {
-    "rule": "FT105",
-    "name": "read-modify-write",
-    "message": "`HtmlDiff._default_prefix +=` is a non-atomic read-modify-write on shared state",
-    "path": "html/_difflib.py",
-    "line": 1949,
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "`signal.signal()` mutates process signal handlers",
+    "path": "watchmedo.py",
+    "line": 743,
     "col": 8,
-    "end_line": 1949,
+    "end_line": 743,
     "severity": "high",
     "confidence": "high",
-    "symbol": "HtmlDiff._default_prefix",
-    "function": "HtmlDiff._make_prefix",
-    "snippet": "HtmlDiff._default_prefix += 1",
-    "why": "`counter += 1` compiles to LOAD / BINARY_OP / STORE. With the GIL these rarely interleaved; without it they interleave constantly and increments are silently lost. This is the single most reproducible free-threading bug.",
-    "fix": "Use itertools.count().__next__, a lock, or move the counter into per-thread state and aggregate at the end.",
+    "symbol": "signal.signal",
+    "function": "auto_restart",
+    "snippet": "signal.signal(signum, handler_termination_signal)",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
     "under_lock": false,
     "extra": {}
    }
@@ -7353,7 +8373,7 @@
    "FT103": 1,
    "FT101": 1
   },
-  "duration_s": 1.37,
+  "duration_s": 1.39,
   "findings": [
    {
     "rule": "FT103",
@@ -7425,7 +8445,7 @@
    "FT110": 4,
    "FT106": 1
   },
-  "duration_s": 0.05,
+  "duration_s": 0.06,
   "findings": [
    {
     "rule": "FT106",
@@ -7491,7 +8511,7 @@
    "FT104": 1,
    "FT103": 1
   },
-  "duration_s": 0.12,
+  "duration_s": 0.13,
   "findings": [
    {
     "rule": "FT103",
@@ -7510,6 +8530,107 @@
     "fix": "Use dict.setdefault() / collections.defaultdict, which are atomic at the C level, or hold a lock across the test and the mutation.",
     "under_lock": false,
     "extra": {}
+   }
+  ]
+ },
+ {
+  "package": "yarl",
+  "files": 8,
+  "high": 1,
+  "medium": 0,
+  "low": 1,
+  "total": 2,
+  "by_rule": {
+   "FT104": 1,
+   "FT112": 1
+  },
+  "duration_s": 0.03,
+  "findings": [
+   {
+    "rule": "FT112",
+    "name": "native-ext-no-ft-declaration",
+    "message": "Cython module `_quoting_c.pyx` does not set `# cython: freethreading_compatible = True`",
+    "path": "_quoting_c.pyx",
+    "line": 1,
+    "col": 0,
+    "end_line": 1,
+    "severity": "high",
+    "confidence": "medium",
+    "symbol": "_quoting_c.pyx",
+    "function": "<module definition>",
+    "snippet": "",
+    "why": "An extension module that does not set Py_mod_gil = Py_MOD_GIL_NOT_USED (or, for Cython, `# cython: freethreading_compatible=True`) makes CPython re-enable the GIL for the whole process at import time. One such dependency silently removes free-threading from every other library in the program.",
+    "fix": "Audit the extension for thread safety, then add the Py_mod_gil slot via multi-phase init (or the Cython directive) and ship a cp3XXt wheel.",
+    "under_lock": false,
+    "extra": {
+     "language": "cython"
+    }
+   }
+  ]
+ },
+ {
+  "package": "cryptography",
+  "files": 78,
+  "high": 1,
+  "medium": 0,
+  "low": 0,
+  "total": 1,
+  "by_rule": {
+   "FT106": 1
+  },
+  "duration_s": 0.12,
+  "findings": [
+   {
+    "rule": "FT106",
+    "name": "process-global-mutation",
+    "message": "assigning into `sys.modules` mutates the interpreter module table",
+    "path": "utils.py",
+    "line": 121,
+    "col": 8,
+    "end_line": 121,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "sys.modules",
+    "function": "deprecated",
+    "snippet": "sys.modules[module_name] = module = _ModuleWithDeprecations(module)",
+    "why": "os.environ, locale, warnings filters, signal handlers, sys.path, the recursion limit and numpy's error state are shared by every thread in the process. A library that flips them affects unrelated threads. No amount of locking inside the library can fix this, because the observers are outside it.",
+    "fix": "Prefer an explicit parameter or a context object. If the global really must change, do it once at import/configure time, or document the call as not-thread-safe and expose a non-global alternative.",
+    "under_lock": false,
+    "extra": {}
+   }
+  ]
+ },
+ {
+  "package": "greenlet",
+  "files": 2,
+  "high": 1,
+  "medium": 0,
+  "low": 0,
+  "total": 1,
+  "by_rule": {
+   "FT112": 1
+  },
+  "duration_s": 0.0,
+  "findings": [
+   {
+    "rule": "FT112",
+    "name": "native-ext-no-ft-declaration",
+    "message": "C extension `PyModule.cpp` defines a module but never sets Py_mod_gil / PyUnstable_Module_SetGIL",
+    "path": "PyModule.cpp",
+    "line": 282,
+    "col": 0,
+    "end_line": 282,
+    "severity": "high",
+    "confidence": "high",
+    "symbol": "PyModule.cpp",
+    "function": "<module definition>",
+    "snippet": "",
+    "why": "An extension module that does not set Py_mod_gil = Py_MOD_GIL_NOT_USED (or, for Cython, `# cython: freethreading_compatible=True`) makes CPython re-enable the GIL for the whole process at import time. One such dependency silently removes free-threading from every other library in the program.",
+    "fix": "Audit the extension for thread safety, then add the Py_mod_gil slot via multi-phase init (or the Cython directive) and ship a cp3XXt wheel.",
+    "under_lock": false,
+    "extra": {
+     "language": "c"
+    }
    }
   ]
  },
@@ -7553,7 +8674,7 @@
    "FT104": 5,
    "FT101": 4
   },
-  "duration_s": 0.09,
+  "duration_s": 0.1,
   "findings": []
  },
  {
@@ -7580,7 +8701,7 @@
    "FT104": 4,
    "FT101": 1
   },
-  "duration_s": 0.08,
+  "duration_s": 0.07,
   "findings": []
  },
  {
@@ -7646,7 +8767,7 @@
   "by_rule": {
    "FT101": 1
   },
-  "duration_s": 0.08,
+  "duration_s": 0.11,
   "findings": []
  },
  {
@@ -7660,19 +8781,6 @@
    "FT104": 1
   },
   "duration_s": 0.05,
-  "findings": []
- },
- {
-  "package": "yarl",
-  "files": 8,
-  "high": 0,
-  "medium": 0,
-  "low": 1,
-  "total": 1,
-  "by_rule": {
-   "FT104": 1
-  },
-  "duration_s": 0.03,
   "findings": []
  },
  {
@@ -7738,7 +8846,7 @@
   "low": 0,
   "total": 0,
   "by_rule": {},
-  "duration_s": 0.0,
+  "duration_s": 0.01,
   "findings": []
  },
  {
@@ -7797,17 +8905,6 @@
   "findings": []
  },
  {
-  "package": "greenlet",
-  "files": 2,
-  "high": 0,
-  "medium": 0,
-  "low": 0,
-  "total": 0,
-  "by_rule": {},
-  "duration_s": 0.0,
-  "findings": []
- },
- {
   "package": "h11",
   "files": 11,
   "high": 0,
@@ -7826,7 +8923,7 @@
   "low": 0,
   "total": 0,
   "by_rule": {},
-  "duration_s": 0.07,
+  "duration_s": 0.08,
   "findings": []
  },
  {
@@ -7892,7 +8989,7 @@
   "low": 0,
   "total": 0,
   "by_rule": {},
-  "duration_s": 0.0,
+  "duration_s": 0.01,
   "findings": []
  },
  {
@@ -7962,6 +9059,17 @@
   "findings": []
  },
  {
+  "package": "pycparser",
+  "files": 7,
+  "high": 0,
+  "medium": 0,
+  "low": 0,
+  "total": 0,
+  "by_rule": {},
+  "duration_s": 0.06,
+  "findings": []
+ },
+ {
   "package": "pydantic_core",
   "files": 2,
   "high": 0,
@@ -7991,7 +9099,7 @@
   "low": 0,
   "total": 0,
   "by_rule": {},
-  "duration_s": 0.02,
+  "duration_s": 0.01,
   "findings": []
  },
  {
@@ -8017,6 +9125,17 @@
   "findings": []
  },
  {
+  "package": "sortedcontainers",
+  "files": 4,
+  "high": 0,
+  "medium": 0,
+  "low": 0,
+  "total": 0,
+  "by_rule": {},
+  "duration_s": 0.03,
+  "findings": []
+ },
+ {
   "package": "soupsieve",
   "files": 7,
   "high": 0,
@@ -8024,7 +9143,7 @@
   "low": 0,
   "total": 0,
   "by_rule": {},
-  "duration_s": 0.04,
+  "duration_s": 0.05,
   "findings": []
  },
  {
@@ -8035,7 +9154,7 @@
   "low": 0,
   "total": 0,
   "by_rule": {},
-  "duration_s": 0.02,
+  "duration_s": 0.03,
   "findings": []
  },
  {
