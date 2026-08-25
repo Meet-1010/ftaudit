@@ -286,12 +286,12 @@ footer{padding:2.4rem 0 3.4rem;color:var(--muted);font-family:var(--mono);font-s
       <p class="dek">
         PEP&nbsp;779 made free-threaded Python officially supported in 3.14. I built a
         toolkit to find the thread-safety bugs that the GIL had been papering over,
-        pointed it at 79&nbsp;installed packages, and found five &mdash; including a hard
-        interpreter crash that has been fixed on <span class="mono">main</span> for six days
-        and never backported to a supported release.
+        pointed it at 85&nbsp;installed packages, and found six &mdash; including a hard
+        interpreter crash fixed on <span class="mono">main</span> for six days and never
+        backported, and a SymPy race that returns the wrong answer with no error at all.
       </p>
       <div class="mast-meta">
-        <span>Scope <b>79 packages &middot; 4,726 files</b></span>
+        <span>Scope <b>85 packages &middot; 4,963 files</b></span>
         <span>Host <b>macOS 15 &middot; arm64 &middot; 10 cores</b></span>
         <span>Date <b>2026-08-25</b></span>
       </div>
@@ -448,6 +448,46 @@ footer{padding:2.4rem 0 3.4rem;color:var(--muted);font-family:var(--mono);font-s
               <span class="metric-label">3.15.0a8t &middot; and GIL on</span>
               <div class="meter ok"><i style="width:0%"></i></div>
               <span class="metric-val"><b>0/120</b> runs crashed</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="finding" data-sev="high">
+        <div class="stripe"></div>
+        <div class="finding-body">
+          <div class="finding-head">
+            <div class="target">SymPy 1.14.0</div>
+            <div class="badges">
+              <span class="badge sev-high">Wrong answer</span>
+              <span class="badge deliv">Patch + test</span>
+            </div>
+          </div>
+          <h3>Symbols built to be distinct silently compare equal</h3>
+          <p class="what">
+            <span class="mono">Dummy.__new__</span> reads
+            <span class="mono">Dummy._count</span> and increments it as two operations, so
+            concurrent calls get the same <span class="mono">dummy_index</span>. That index is
+            part of <span class="mono">_hashable_content</span>, so colliding dummies
+            <em>compare equal and hash identically</em> &mdash; which is precisely what a Dummy
+            exists to prevent. Sixteen threads each asked for one private symbol; one thread
+            then substituted into its own expression:
+          </p>
+          <div class="term" style="margin-top:.9rem">
+<pre>thread 0 built:      _Dummy_46**2 + 1
+thread 3 substitutes its own dummy -&gt; 0:
+  expr.subs(_Dummy_46, 0) = <span class="c">1</span>        <span class="d">&lt;-- should be unchanged</span></pre>
+          </div>
+          <div class="evidence">
+            <div class="metric">
+              <span class="metric-label">Before &middot; 6,400 symbols</span>
+              <div class="meter bad"><i style="width:73%"></i></div>
+              <span class="metric-val"><b>4,680</b> collided (73%)</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">After the patch</span>
+              <div class="meter ok"><i style="width:0%"></i></div>
+              <span class="metric-val"><b>0</b> collided &middot; 2617 tests pass &middot; +0.9% cost</span>
             </div>
           </div>
         </div>
@@ -701,6 +741,11 @@ barrier = threading.Barrier(2)
         <li><b>&ldquo;Re-enables the GIL&rdquo; is a packaging fact, not an accusation.</b> Those
         extensions may well be thread-safe and merely undeclared. Only an audit settles it, which
         is why the ask is a tracking issue rather than a drive-by PR adding the flag.</li>
+        <li><b>One finding was dropped after investigation.</b> <span class="mono">np.seterr()</span>
+        in numpy's masked-array path looked like process-global mutation on a hot loop, but numpy
+        made <span class="mono">errstate</span> context-local in 2.0 and a two-thread test showed
+        no leakage. That was a false positive in my own FT106 rule, so I fixed the rule instead of
+        filing the non-bug.</li>
         <li><b>No issues have been filed.</b> The reports, reproducers and patches are written and
         verified; submitting them upstream is a decision for a human, not the tool.</li>
       </ul>
