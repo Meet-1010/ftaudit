@@ -1,0 +1,26 @@
+
+=== 2 threads x 3000, trivial gen ===
+  3.13.13t                2/20 crashed   signal/rc=-10 x2
+  3.14.0t                19/20 crashed   signal/rc=-11 x15, Fatal Python error: _TAIL_CALL_CACHE x4
+  3.14.4t                20/20 crashed   Fatal Python error: _TAIL_CALL_CACHE x12, signal/rc=-11 x8
+  3.15.0a8t               0/20 crashed   
+  3.14.4t GIL=1           0/20 crashed   
+  3.14.7 (GIL build)      0/20 crashed   
+
+=== 8 threads x 20000, counter gen ===
+  3.13.13t               20/20 crashed   signal/rc=-11 x18, signal/rc=-10 x2
+  3.14.0t                20/20 crashed   signal/rc=-11 x14, Fatal Python error: _TAIL_CALL_CACHE x5
+  3.14.4t                20/20 crashed   signal/rc=-11 x11, Fatal Python error: _TAIL_CALL_CACHE x9
+  3.15.0a8t               0/20 crashed   
+  3.14.4t GIL=1           0/20 crashed   
+  3.14.7 (GIL build)      0/20 crashed   
+
+=== 16 threads x 50000, yield-from range ===
+  3.13.13t               18/20 crashed   signal/rc=-11 x17, Fatal Python error: _PyEval_EvalFrameDefault x1
+  3.14.0t                18/20 crashed   signal/rc=-11 x15, Fatal Python error: _TAIL_CALL_CACHE x3
+  3.14.4t                13/20 crashed   signal/rc=-11 x7, Fatal Python error: _TAIL_CALL_CACHE x6
+  3.15.0a8t               0/20 crashed   
+  3.14.4t GIL=1           0/20 crashed   
+  3.14.7 (GIL build)      0/20 crashed   
+
+wrote findings/crash_matrix.json

@@ -1,0 +1,578 @@
+{
+  "interpreter": "/Users/meetchauhan/Claude Projects/Free-threaded-python project/.venv-ft/bin/python :: 3.14.4 True False",
+  "summary": {
+    "checked": 81,
+    "gil_reenabled": 3,
+    "crashed": 0,
+    "import_failed": 8
+  },
+  "results": [
+    {
+      "module": "grpc",
+      "status": "GIL-REENABLED",
+      "reenabled_gil": true,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "soupsieve",
+      "status": "GIL-REENABLED",
+      "reenabled_gil": true,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "sqlalchemy",
+      "status": "GIL-REENABLED",
+      "reenabled_gil": true,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "Flask",
+      "status": "IMPORT-FAIL",
+      "reenabled_gil": false,
+      "error": "ModuleNotFoundError: No module named 'Flask'",
+      "returncode": 0
+    },
+    {
+      "module": "Jinja2",
+      "status": "IMPORT-FAIL",
+      "reenabled_gil": false,
+      "error": "ModuleNotFoundError: No module named 'Jinja2'",
+      "returncode": 0
+    },
+    {
+      "module": "PIL",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "Pygments",
+      "status": "IMPORT-FAIL",
+      "reenabled_gil": false,
+      "error": "ModuleNotFoundError: No module named 'Pygments'",
+      "returncode": 0
+    },
+    {
+      "module": "Werkzeug",
+      "status": "IMPORT-FAIL",
+      "reenabled_gil": false,
+      "error": "ModuleNotFoundError: No module named 'Werkzeug'",
+      "returncode": 0
+    },
+    {
+      "module": "aiohappyeyeballs",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "aiohttp",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "aiosignal",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "annotated_types",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "anyio",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "attrs",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "beautifulsoup4",
+      "status": "IMPORT-FAIL",
+      "reenabled_gil": false,
+      "error": "ModuleNotFoundError: No module named 'beautifulsoup4'",
+      "returncode": 0
+    },
+    {
+      "module": "blinker",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "cachetools",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "certifi",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "charset_normalizer",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "click",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "contourpy",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "coverage",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "cycler",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "dateutil",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "ddc459050edb75a05942__mypyc",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "filelock",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "fontTools",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "frozenlist",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "fsspec",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "ftaudit",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "greenlet",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "h11",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "httpcore",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "httpx",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "idna",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "iniconfig",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "isympy",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "itsdangerous",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "joblib",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "jsonschema",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "jsonschema_specifications",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "kiwisolver",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "lxml",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "markdown_it_py",
+      "status": "IMPORT-FAIL",
+      "reenabled_gil": false,
+      "error": "ModuleNotFoundError: No module named 'markdown_it_py'",
+      "returncode": 0
+    },
+    {
+      "module": "markupsafe",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "matplotlib",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "mdurl",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "more_itertools",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "mpmath",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "multidict",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "networkx",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "numpy",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "packaging",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "pandas",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "platformdirs",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "pluggy",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "propcache",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "protobuf",
+      "status": "IMPORT-FAIL",
+      "reenabled_gil": false,
+      "error": "ModuleNotFoundError: No module named 'protobuf'",
+      "returncode": 0
+    },
+    {
+      "module": "psutil",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "py",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "pydantic",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "pydantic_core",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "pyparsing",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "pytest",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "referencing",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "regex",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "requests",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "rich",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "rpds_py",
+      "status": "IMPORT-FAIL",
+      "reenabled_gil": false,
+      "error": "ModuleNotFoundError: No module named 'rpds_py'",
+      "returncode": 0
+    },
+    {
+      "module": "scipy",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "six",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "sniffio",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "sympy",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "toml",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "tomli",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "tqdm",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "typing_extensions",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "typing_inspection",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "urllib3",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "yaml",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    },
+    {
+      "module": "yarl",
+      "status": "ok",
+      "reenabled_gil": false,
+      "error": null,
+      "returncode": 0
+    }
+  ]
+}

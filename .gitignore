@@ -1,0 +1,9 @@
+.venv-ft/
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+bench/install.log
+bench/_variant.py

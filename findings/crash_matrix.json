@@ -1,0 +1,223 @@
+{
+  "2 threads x 3000, trivial gen": [
+    {
+      "name": "3.13.13t",
+      "available": true,
+      "version_gil_ft": "3.13.13 False True",
+      "crashes": 2,
+      "trials": 20,
+      "signatures": {
+        "signal/rc=-10": 2
+      },
+      "returncodes": {
+        "-10": 2
+      }
+    },
+    {
+      "name": "3.14.0t",
+      "available": true,
+      "version_gil_ft": "3.14.0 False True",
+      "crashes": 19,
+      "trials": 20,
+      "signatures": {
+        "signal/rc=-11": 15,
+        "Fatal Python error: _TAIL_CALL_CACHE": 4
+      },
+      "returncodes": {
+        "-11": 16,
+        "-6": 3
+      }
+    },
+    {
+      "name": "3.14.4t",
+      "available": true,
+      "version_gil_ft": "3.14.4 False True",
+      "crashes": 20,
+      "trials": 20,
+      "signatures": {
+        "Fatal Python error: _TAIL_CALL_CACHE": 12,
+        "signal/rc=-11": 8
+      },
+      "returncodes": {
+        "-6": 11,
+        "-11": 9
+      }
+    },
+    {
+      "name": "3.15.0a8t",
+      "available": true,
+      "version_gil_ft": "3.15.0a8 False True",
+      "crashes": 0,
+      "trials": 20,
+      "signatures": {},
+      "returncodes": {}
+    },
+    {
+      "name": "3.14.4t GIL=1",
+      "available": true,
+      "version_gil_ft": "3.14.4 True True",
+      "crashes": 0,
+      "trials": 20,
+      "signatures": {},
+      "returncodes": {}
+    },
+    {
+      "name": "3.14.7 (GIL build)",
+      "available": true,
+      "version_gil_ft": "3.14.7 True False",
+      "crashes": 0,
+      "trials": 20,
+      "signatures": {},
+      "returncodes": {}
+    }
+  ],
+  "8 threads x 20000, counter gen": [
+    {
+      "name": "3.13.13t",
+      "available": true,
+      "version_gil_ft": "3.13.13 False True",
+      "crashes": 20,
+      "trials": 20,
+      "signatures": {
+        "signal/rc=-11": 18,
+        "signal/rc=-10": 2
+      },
+      "returncodes": {
+        "-11": 18,
+        "-10": 2
+      }
+    },
+    {
+      "name": "3.14.0t",
+      "available": true,
+      "version_gil_ft": "3.14.0 False True",
+      "crashes": 20,
+      "trials": 20,
+      "signatures": {
+        "Fatal Python error: _TAIL_CALL_CACHE": 5,
+        "signal/rc=-11": 14,
+        "signal/rc=-10": 1
+      },
+      "returncodes": {
+        "-6": 2,
+        "-11": 17,
+        "-10": 1
+      }
+    },
+    {
+      "name": "3.14.4t",
+      "available": true,
+      "version_gil_ft": "3.14.4 False True",
+      "crashes": 20,
+      "trials": 20,
+      "signatures": {
+        "Fatal Python error: _TAIL_CALL_CACHE": 9,
+        "signal/rc=-11": 11
+      },
+      "returncodes": {
+        "-6": 3,
+        "-11": 17
+      }
+    },
+    {
+      "name": "3.15.0a8t",
+      "available": true,
+      "version_gil_ft": "3.15.0a8 False True",
+      "crashes": 0,
+      "trials": 20,
+      "signatures": {},
+      "returncodes": {}
+    },
+    {
+      "name": "3.14.4t GIL=1",
+      "available": true,
+      "version_gil_ft": "3.14.4 True True",
+      "crashes": 0,
+      "trials": 20,
+      "signatures": {},
+      "returncodes": {}
+    },
+    {
+      "name": "3.14.7 (GIL build)",
+      "available": true,
+      "version_gil_ft": "3.14.7 True False",
+      "crashes": 0,
+      "trials": 20,
+      "signatures": {},
+      "returncodes": {}
+    }
+  ],
+  "16 threads x 50000, yield-from range": [
+    {
+      "name": "3.13.13t",
+      "available": true,
+      "version_gil_ft": "3.13.13 False True",
+      "crashes": 18,
+      "trials": 20,
+      "signatures": {
+        "signal/rc=-11": 17,
+        "Fatal Python error: _PyEval_EvalFrameDefault": 1
+      },
+      "returncodes": {
+        "-11": 18
+      }
+    },
+    {
+      "name": "3.14.0t",
+      "available": true,
+      "version_gil_ft": "3.14.0 False True",
+      "crashes": 18,
+      "trials": 20,
+      "signatures": {
+        "signal/rc=-11": 15,
+        "Fatal Python error: _TAIL_CALL_CACHE": 3
+      },
+      "returncodes": {
+        "-11": 17,
+        "-6": 1
+      }
+    },
+    {
+      "name": "3.14.4t",
+      "available": true,
+      "version_gil_ft": "3.14.4 False True",
+      "crashes": 13,
+      "trials": 20,
+      "signatures": {
+        "signal/rc=-11": 7,
+        "Fatal Python error: _TAIL_CALL_CACHE": 6
+      },
+      "returncodes": {
+        "-11": 9,
+        "-6": 4
+      }
+    },
+    {
+      "name": "3.15.0a8t",
+      "available": true,
+      "version_gil_ft": "3.15.0a8 False True",
+      "crashes": 0,
+      "trials": 20,
+      "signatures": {},
+      "returncodes": {}
+    },
+    {
+      "name": "3.14.4t GIL=1",
+      "available": true,
+      "version_gil_ft": "3.14.4 True True",
+      "crashes": 0,
+      "trials": 20,
+      "signatures": {},
+      "returncodes": {}
+    },
+    {
+      "name": "3.14.7 (GIL build)",
+      "available": true,
+      "version_gil_ft": "3.14.7 True False",
+      "crashes": 0,
+      "trials": 20,
+      "signatures": {},
+      "returncodes": {}
+    }
+  ]
+}

@@ -1,0 +1,241 @@
+diff --git a/lib/yaml/constructor.py b/lib/yaml/constructor.py
+index 97aa7b5..73c8f23 100644
+--- a/lib/yaml/constructor.py
++++ b/lib/yaml/constructor.py
+@@ -11,7 +11,13 @@ __all__ = [
+ from .error import *
+ from .nodes import *
+ 
+-import collections.abc, datetime, base64, binascii, re, sys, types
++import collections.abc, datetime, base64, binascii, re, sys, threading, types
++
++# Guards the copy-on-write of the class-level registries below.  The copy and
++# the assignment that publishes it are two separate operations; without this
++# lock two threads can each copy the inherited dict and the second assignment
++# discards the first thread's registration.
++_registry_lock = threading.RLock()
+ 
+ class ConstructorError(MarkedYAMLError):
+     pass
+@@ -158,15 +164,17 @@ class BaseConstructor:
+ 
+     @classmethod
+     def add_constructor(cls, tag, constructor):
+-        if not 'yaml_constructors' in cls.__dict__:
+-            cls.yaml_constructors = cls.yaml_constructors.copy()
+-        cls.yaml_constructors[tag] = constructor
++        with _registry_lock:
++            if not 'yaml_constructors' in cls.__dict__:
++                cls.yaml_constructors = cls.yaml_constructors.copy()
++            cls.yaml_constructors[tag] = constructor
+ 
+     @classmethod
+     def add_multi_constructor(cls, tag_prefix, multi_constructor):
+-        if not 'yaml_multi_constructors' in cls.__dict__:
+-            cls.yaml_multi_constructors = cls.yaml_multi_constructors.copy()
+-        cls.yaml_multi_constructors[tag_prefix] = multi_constructor
++        with _registry_lock:
++            if not 'yaml_multi_constructors' in cls.__dict__:
++                cls.yaml_multi_constructors = cls.yaml_multi_constructors.copy()
++            cls.yaml_multi_constructors[tag_prefix] = multi_constructor
+ 
+ class SafeConstructor(BaseConstructor):
+ 
+diff --git a/lib/yaml/representer.py b/lib/yaml/representer.py
+index 808ca06..b00406d 100644
+--- a/lib/yaml/representer.py
++++ b/lib/yaml/representer.py
+@@ -5,7 +5,11 @@ __all__ = ['BaseRepresenter', 'SafeRepresenter', 'Representer',
+ from .error import *
+ from .nodes import *
+ 
+-import datetime, copyreg, types, base64, collections
++import datetime, copyreg, types, base64, collections, threading
++
++# See the note in constructor.py: the copy-on-write of the class-level
++# registries is a check-then-act and needs to be atomic.
++_registry_lock = threading.RLock()
+ 
+ class RepresenterError(YAMLError):
+     pass
+@@ -64,15 +68,17 @@ class BaseRepresenter:
+ 
+     @classmethod
+     def add_representer(cls, data_type, representer):
+-        if not 'yaml_representers' in cls.__dict__:
+-            cls.yaml_representers = cls.yaml_representers.copy()
+-        cls.yaml_representers[data_type] = representer
++        with _registry_lock:
++            if not 'yaml_representers' in cls.__dict__:
++                cls.yaml_representers = cls.yaml_representers.copy()
++            cls.yaml_representers[data_type] = representer
+ 
+     @classmethod
+     def add_multi_representer(cls, data_type, representer):
+-        if not 'yaml_multi_representers' in cls.__dict__:
+-            cls.yaml_multi_representers = cls.yaml_multi_representers.copy()
+-        cls.yaml_multi_representers[data_type] = representer
++        with _registry_lock:
++            if not 'yaml_multi_representers' in cls.__dict__:
++                cls.yaml_multi_representers = cls.yaml_multi_representers.copy()
++            cls.yaml_multi_representers[data_type] = representer
+ 
+     def represent_scalar(self, tag, value, style=None):
+         if style is None:
+diff --git a/lib/yaml/resolver.py b/lib/yaml/resolver.py
+index 3522bda..357216f 100644
+--- a/lib/yaml/resolver.py
++++ b/lib/yaml/resolver.py
+@@ -4,7 +4,13 @@ __all__ = ['BaseResolver', 'Resolver']
+ from .error import *
+ from .nodes import *
+ 
+-import re
++import re, threading
++
++# Guards the copy-on-write of the class-level resolver registries.  The copy
++# and the assignment that publishes it are separate operations, so without this
++# lock two threads can each copy the inherited registry and the second
++# assignment silently discards the first thread's registration.
++_registry_lock = threading.RLock()
+ 
+ class ResolverError(YAMLError):
+     pass
+@@ -24,15 +30,16 @@ class BaseResolver:
+ 
+     @classmethod
+     def add_implicit_resolver(cls, tag, regexp, first):
+-        if not 'yaml_implicit_resolvers' in cls.__dict__:
+-            implicit_resolvers = {}
+-            for key in cls.yaml_implicit_resolvers:
+-                implicit_resolvers[key] = cls.yaml_implicit_resolvers[key][:]
+-            cls.yaml_implicit_resolvers = implicit_resolvers
+-        if first is None:
+-            first = [None]
+-        for ch in first:
+-            cls.yaml_implicit_resolvers.setdefault(ch, []).append((tag, regexp))
++        with _registry_lock:
++            if not 'yaml_implicit_resolvers' in cls.__dict__:
++                implicit_resolvers = {}
++                for key in cls.yaml_implicit_resolvers:
++                    implicit_resolvers[key] = cls.yaml_implicit_resolvers[key][:]
++                cls.yaml_implicit_resolvers = implicit_resolvers
++            if first is None:
++                first = [None]
++            for ch in first:
++                cls.yaml_implicit_resolvers.setdefault(ch, []).append((tag, regexp))
+ 
+     @classmethod
+     def add_path_resolver(cls, tag, path, kind=None):
+@@ -48,8 +55,6 @@ class BaseResolver:
+         # a mapping value that corresponds to a scalar key which content is
+         # equal to the `index_check` value.  An integer `index_check` matches
+         # against a sequence value with the index equal to `index_check`.
+-        if not 'yaml_path_resolvers' in cls.__dict__:
+-            cls.yaml_path_resolvers = cls.yaml_path_resolvers.copy()
+         new_path = []
+         for element in path:
+             if isinstance(element, (list, tuple)):
+@@ -86,7 +91,10 @@ class BaseResolver:
+         elif kind not in [ScalarNode, SequenceNode, MappingNode]    \
+                 and kind is not None:
+             raise ResolverError("Invalid node kind: %s" % kind)
+-        cls.yaml_path_resolvers[tuple(new_path), kind] = tag
++        with _registry_lock:
++            if not 'yaml_path_resolvers' in cls.__dict__:
++                cls.yaml_path_resolvers = cls.yaml_path_resolvers.copy()
++            cls.yaml_path_resolvers[tuple(new_path), kind] = tag
+ 
+     def descend_resolver(self, current_node, current_index):
+         if not self.yaml_path_resolvers:
+diff --git a/tests/test_freethreading.py b/tests/test_freethreading.py
+new file mode 100644
+index 0000000..c0003ca
+--- /dev/null
++++ b/tests/test_freethreading.py
+@@ -0,0 +1,85 @@
++"""Thread-safety of the class-level registries.
++
++Under the free-threaded build (PEP 703) the copy-on-write in
++``add_constructor`` / ``add_representer`` / ``add_implicit_resolver`` is a
++check-then-act: the copy of the inherited registry and the assignment that
++publishes it are separate operations.  Two threads registering at the same
++time can each copy the parent registry, and the second assignment discards the
++first thread's copy, losing that registration with no error.
++
++These tests register from many threads at once and assert that every
++registration survives.
++"""
++
++import re
++import threading
++
++import yaml
++
++THREADS = 16
++TRIALS = 50
++
++
++def _run_concurrently(fn, threads=THREADS):
++    """Call fn(i) on `threads` threads released from a common barrier."""
++    barrier = threading.Barrier(threads)
++    errors = []
++
++    def worker(i):
++        barrier.wait()
++        try:
++            fn(i)
++        except BaseException as exc:  # pragma: no cover - surfaced via assert
++            errors.append(exc)
++
++    ts = [threading.Thread(target=worker, args=(i,)) for i in range(threads)]
++    for t in ts:
++        t.start()
++    for t in ts:
++        t.join()
++    assert not errors, f"worker raised: {errors[0]!r}"
++
++
++def test_concurrent_add_constructor_keeps_every_registration():
++    for _ in range(TRIALS):
++        loader = type("TrialLoader", (yaml.SafeLoader,), {})
++        _run_concurrently(lambda i: loader.add_constructor(f"!tag{i}", lambda l, n: i))
++        missing = [f"!tag{i}" for i in range(THREADS) if f"!tag{i}" not in loader.yaml_constructors]
++        assert not missing, f"lost {len(missing)} of {THREADS} constructors: {missing[:5]}"
++
++
++def test_concurrent_add_multi_constructor_keeps_every_registration():
++    for _ in range(TRIALS):
++        loader = type("TrialLoader", (yaml.SafeLoader,), {})
++        _run_concurrently(lambda i: loader.add_multi_constructor(f"!p{i}/", lambda l, s, n: i))
++        missing = [f"!p{i}/" for i in range(THREADS) if f"!p{i}/" not in loader.yaml_multi_constructors]
++        assert not missing, f"lost {len(missing)} of {THREADS} multi-constructors: {missing[:5]}"
++
++
++def test_concurrent_add_representer_keeps_every_registration():
++    types = [type(f"T{i}", (), {}) for i in range(THREADS)]
++    for _ in range(TRIALS):
++        dumper = type("TrialDumper", (yaml.SafeDumper,), {})
++        _run_concurrently(lambda i: dumper.add_representer(types[i], lambda d, o: d.represent_str("x")))
++        missing = [i for i in range(THREADS) if types[i] not in dumper.yaml_representers]
++        assert not missing, f"lost {len(missing)} of {THREADS} representers: {missing[:5]}"
++
++
++def test_concurrent_add_implicit_resolver_keeps_every_registration():
++    for _ in range(TRIALS):
++        resolver = type("TrialResolver", (yaml.resolver.Resolver,), {})
++        _run_concurrently(
++            lambda i: resolver.add_implicit_resolver(f"!t{i}", re.compile(rf"^{i}$"), [str(i % 10)])
++        )
++        registered = {tag for entries in resolver.yaml_implicit_resolvers.values() for tag, _ in entries}
++        missing = [f"!t{i}" for i in range(THREADS) if f"!t{i}" not in registered]
++        assert not missing, f"lost {len(missing)} of {THREADS} implicit resolvers: {missing[:5]}"
++
++
++def test_concurrent_add_path_resolver_keeps_every_registration():
++    for _ in range(TRIALS):
++        resolver = type("TrialResolver", (yaml.resolver.Resolver,), {})
++        _run_concurrently(lambda i: resolver.add_path_resolver(f"!p{i}", [str(i)], dict))
++        registered = set(resolver.yaml_path_resolvers.values())
++        missing = [f"!p{i}" for i in range(THREADS) if f"!p{i}" not in registered]
++        assert not missing, f"lost {len(missing)} of {THREADS} path resolvers: {missing[:5]}"

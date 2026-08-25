@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ftaudit"
+version = "0.1.0"
+description = "Find the thread-safety bugs the GIL used to hide (PEP 703 free-threaded Python)"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "Meet Chauhan" }]
+keywords = ["free-threading", "nogil", "PEP703", "thread-safety", "static-analysis", "concurrency"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: Free Threading :: 3 - Stable",
+  "Topic :: Software Development :: Quality Assurance",
+]
+dependencies = []
+
+[project.scripts]
+ftaudit = "ftaudit.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
