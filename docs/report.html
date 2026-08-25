@@ -236,6 +236,8 @@ tr.control th,tr.control td{background:var(--clean-wash)}
 .badge.sev-high{color:var(--crash);border-color:var(--crash);background:var(--crash-wash)}
 .badge.sev-med{color:var(--brass);border-color:var(--brass);background:var(--brass-wash)}
 .badge.deliv{color:var(--clean);border-color:var(--clean);background:var(--clean-wash)}
+a.badge.deliv{text-decoration:none}
+a.badge.deliv:hover{background:var(--clean);color:var(--paper)}
 .finding h3{margin-top:.75rem}
 .finding p.what{margin-top:.5rem;color:var(--ink-2);font-size:.98rem}
 .evidence{
@@ -286,9 +288,10 @@ footer{padding:2.4rem 0 3.4rem;color:var(--muted);font-family:var(--mono);font-s
       <p class="dek">
         PEP&nbsp;779 made free-threaded Python officially supported in 3.14. I built a
         toolkit to find the thread-safety bugs that the GIL had been papering over,
-        pointed it at 85&nbsp;installed packages, and found six &mdash; including a hard
-        interpreter crash fixed on <span class="mono">main</span> for six days and never
-        backported, and a SymPy race that returns the wrong answer with no error at all.
+        pointed it at 85&nbsp;installed packages, and found six. Four fixes and two reports
+        are now upstream &mdash; including a hard interpreter crash fixed on
+        <span class="mono">main</span> and never backported, and a SymPy race that returns
+        the wrong answer with no error at all.
       </p>
       <div class="mast-meta">
         <span>Scope <b>85 packages &middot; 4,963 files</b></span>
@@ -423,7 +426,7 @@ footer{padding:2.4rem 0 3.4rem;color:var(--muted);font-family:var(--mono);font-s
             <div class="target">CPython 3.13t &amp; 3.14t</div>
             <div class="badges">
               <span class="badge sev-high">Interpreter crash</span>
-              <span class="badge deliv">Backport request</span>
+              <a class="badge deliv" href="https://github.com/python/cpython/issues/156351">cpython#156351</a>
             </div>
           </div>
           <h3>Two threads iterating one generator segfault the interpreter</h3>
@@ -460,7 +463,7 @@ footer{padding:2.4rem 0 3.4rem;color:var(--muted);font-family:var(--mono);font-s
             <div class="target">SymPy 1.14.0</div>
             <div class="badges">
               <span class="badge sev-high">Wrong answer</span>
-              <span class="badge deliv">Patch + test</span>
+              <a class="badge deliv" href="https://github.com/sympy/sympy/pull/30340">sympy#30340</a>
             </div>
           </div>
           <h3>Symbols built to be distinct silently compare equal</h3>
@@ -500,7 +503,7 @@ thread 3 substitutes its own dummy -&gt; 0:
             <div class="target">lxml &middot; grpcio &middot; SQLAlchemy</div>
             <div class="badges">
               <span class="badge sev-high">Whole-process</span>
-              <span class="badge deliv">Reports ready</span>
+              <span class="badge deliv">Not filed</span>
             </div>
           </div>
           <h3>Undeclared extensions switch the GIL back on for everyone</h3>
@@ -533,7 +536,7 @@ thread 3 substitutes its own dummy -&gt; 0:
             <div class="target">PyYAML 6.0.3</div>
             <div class="badges">
               <span class="badge sev-high">Silent data loss</span>
-              <span class="badge deliv">Patch + 5 tests</span>
+              <a class="badge deliv" href="https://github.com/yaml/pyyaml/pull/958">pyyaml#958</a>
             </div>
           </div>
           <h3>Concurrent registration silently loses constructors and resolvers</h3>
@@ -568,7 +571,7 @@ thread 3 substitutes its own dummy -&gt; 0:
             <div class="target">Werkzeug</div>
             <div class="badges">
               <span class="badge sev-med">Duplicated output</span>
-              <span class="badge deliv">Patch</span>
+              <a class="badge deliv" href="https://github.com/pallets/werkzeug/pull/3258">werkzeug#3258</a>
             </div>
           </div>
           <h3>The log handler gets installed twice</h3>
@@ -602,7 +605,7 @@ thread 3 substitutes its own dummy -&gt; 0:
             <div class="target">certifi</div>
             <div class="badges">
               <span class="badge sev-med">Resource leak</span>
-              <span class="badge deliv">Patch</span>
+              <a class="badge deliv" href="https://github.com/certifi/python-certifi/pull/433">certifi#433</a>
             </div>
           </div>
           <h3><span class="mono">where()</span> orphans its resource context managers</h3>
@@ -746,8 +749,13 @@ barrier = threading.Barrier(2)
         made <span class="mono">errstate</span> context-local in 2.0 and a two-thread test showed
         no leakage. That was a false positive in my own FT106 rule, so I fixed the rule instead of
         filing the non-bug.</li>
-        <li><b>No issues have been filed.</b> The reports, reproducers and patches are written and
-        verified; submitting them upstream is a decision for a human, not the tool.</li>
+        <li><b>Filed, not merged.</b> Four pull requests and two issues are open upstream. None
+        has been reviewed yet, and a maintainer may reasonably prefer a different fix &mdash; the
+        SymPy PR names a lock-free alternative I would have chosen for a larger refactor.</li>
+        <li><b>The GIL-declaration reports are deliberately unfiled.</b> "This extension re-enables
+        the GIL" is a fact about a shipped wheel, not a demonstrated bug. The honest ask is
+        "audit this, then declare it", which is work for the maintainer rather than something
+        they can merge.</li>
       </ul>
     </div>
   </section>
