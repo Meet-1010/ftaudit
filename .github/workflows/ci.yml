@@ -1,0 +1,89 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: tests · ${{ matrix.os }} · ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python: ["3.13t", "3.14t", "3.14"]
+        include:
+          - os: ubuntu-latest
+            python: "3.15t"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Show interpreter
+        run: |
+          python -VV
+          python -c "import sys,sysconfig;print('free-threaded:',bool(sysconfig.get_config_var('Py_GIL_DISABLED')));print('gil enabled :',sys._is_gil_enabled() if hasattr(sys,'_is_gil_enabled') else True)"
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e . pytest
+      - name: Test
+        run: python -m pytest tests/ -q
+      - name: Self-scan (the tool must not trip on its own source)
+        run: python -m ftaudit.cli scan src/ftaudit --fail-on high
+
+  reproduce:
+    # The findings were originally measured on macOS/arm64 only. This job runs
+    # the same reproducers on Linux and Windows so the evidence is not
+    # single-platform. It reports rather than gates: these scripts exit non-zero
+    # precisely when they observe the bug they are meant to observe.
+    name: reproducers · ${{ matrix.os }} · ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python: ["3.13t", "3.14t"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install --upgrade pip && python -m pip install -e . pyyaml certifi werkzeug sympy
+
+      - name: CPython shared-generator crash (GIL off)
+        shell: bash
+        run: |
+          crashes=0
+          for i in $(seq 1 20); do
+            python findings/reproducers/gen_concurrent_next.py >/dev/null 2>&1 || crashes=$((crashes+1))
+          done
+          echo "GIL off : $crashes/20 runs crashed" | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: CPython shared-generator crash (GIL on — control)
+        shell: bash
+        env:
+          PYTHON_GIL: "1"
+        run: |
+          crashes=0
+          for i in $(seq 1 20); do
+            python findings/reproducers/gen_concurrent_next.py >/dev/null 2>&1 || crashes=$((crashes+1))
+          done
+          echo "GIL on  : $crashes/20 runs crashed" | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Library race reproducers
+        shell: bash
+        run: |
+          for r in sympy_dummy_index pyyaml_add_constructor werkzeug_logger_init certifi_where_init; do
+            echo "--- $r ---" | tee -a "$GITHUB_STEP_SUMMARY"
+            python "findings/reproducers/$r.py" 2>&1 | tail -4 | tee -a "$GITHUB_STEP_SUMMARY" || true
+          done
+
+      - name: Which dependencies re-enable the GIL
+        shell: bash
+        run: python -m ftaudit.cli gilcheck --installed 2>&1 | tee -a "$GITHUB_STEP_SUMMARY" || true
