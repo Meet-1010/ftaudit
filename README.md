@@ -152,12 +152,12 @@ PR text in [`upstream/`](upstream/).
 
 | # | Finding | Status |
 | --- | --- | --- |
-| [01](findings/01-cpython-generator-crash.md) | **CPython segfaults** when two threads iterate one generator, on free-threaded 3.13/3.14. Fixed in 3.15, never backported. 150 crashes / 180 runs. | backport request drafted |
-| [06](findings/06-sympy-dummy-index.md) | **SymPy** hands out colliding `dummy_index` values, so symbols meant to be distinct compare **equal** — silently wrong maths. 73% collided. | patch + regression test |
-| [02](findings/02-gil-reenabled-packages.md) | **lxml, grpcio, SQLAlchemy** silently re-enable the GIL process-wide. Importing `bs4` is enough. | reports ready |
-| [03](findings/03-pyyaml-registries.md) | **PyYAML** loses constructor/resolver registrations under concurrent registration. | patch + 5 regression tests |
-| [04](findings/04-werkzeug-logger.md) | **Werkzeug** installs its log handler twice; every line printed twice. | patch |
-| [05](findings/05-certifi-where.md) | **certifi** orphans resource context managers in `where()`. | patch |
+| [01](findings/01-cpython-generator-crash.md) | **CPython segfaults** when two threads iterate one generator, on free-threaded 3.13/3.14. Fixed in 3.15, never backported. 150 crashes / 180 runs. | [issue #156351](https://github.com/python/cpython/issues/156351) |
+| [06](findings/06-sympy-dummy-index.md) | **SymPy** hands out colliding `dummy_index` values, so symbols meant to be distinct compare **equal** — silently wrong maths. 73% collided. | [PR #30340](https://github.com/sympy/sympy/pull/30340) |
+| [02](findings/02-gil-reenabled-packages.md) | **lxml, grpcio, SQLAlchemy** silently re-enable the GIL process-wide. Importing `bs4` is enough. | reports ready, not filed |
+| [03](findings/03-pyyaml-registries.md) | **PyYAML** loses constructor/resolver registrations under concurrent registration. | [issue #957](https://github.com/yaml/pyyaml/issues/957) · [PR #958](https://github.com/yaml/pyyaml/pull/958) |
+| [04](findings/04-werkzeug-logger.md) | **Werkzeug** installs its log handler twice; every line printed twice. | patch ready, not filed |
+| [05](findings/05-certifi-where.md) | **certifi** orphans resource context managers in `where()`. | patch ready, not filed |
 
 ## Development
 

@@ -115,10 +115,11 @@ For `add_path_resolver` the copy-on-write currently sits ~35 lines above the sto
 with argument validation in between; moving it down next to the store makes the
 critical section small and obvious.
 
-I have a patch and five regression tests (one per registry) ready to open as a PR
-if this framing looks right — the tests fail on 4 of 5 registries without the fix
-and pass with it, and the existing suite stays green on both a free-threaded and a
-GIL-enabled interpreter.
+I have a patch and five regression tests (one per registry) and will open a PR
+referencing this issue — the tests fail on 4 of 5 registries without the fix and
+pass with it, and the existing suite stays green on both a free-threaded and a
+GIL-enabled interpreter. Happy to rework the approach if you would rather solve
+it a different way.
 
 ## Environment
 
