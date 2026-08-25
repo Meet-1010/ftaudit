@@ -1,3 +1,26 @@
+From 5d492b71915a77943c07c50153db942b8d139d80 Mon Sep 17 00:00:00 2001
+From: Meet Chauhan <133805065+Meet-1010@users.noreply.github.com>
+Date: Tue, 25 Aug 2026 16:07:28 +0530
+Subject: [PATCH] Make where() materialise the CA bundle exactly once
+
+The 'if _CACERT_PATH is None' test and the assignment that publishes the path
+are separate operations. Concurrent callers could each enter their own
+resource context and register their own atexit hook, but only the last
+_CACERT_CTX assignment survived, orphaning the earlier context managers.
+Under zipimport as_file() extracts a temporary file, so an orphan is a file
+nothing will clean up, and the duplicate atexit hooks can close a context
+whose path another thread is still holding.
+
+Use double-checked locking and publish _CACERT_PATH last, so no thread can
+observe a path whose context manager is not yet reachable for cleanup. Both
+the importlib.resources branch and the fallback branch are covered.
+
+The new test fails 5/5 runs without this change and passes with it.
+---
+ certifi/core.py               | 76 ++++++++++++++++++++++-------------
+ certifi/tests/test_certify.py | 76 +++++++++++++++++++++++++++++++++++
+ 2 files changed, 125 insertions(+), 27 deletions(-)
+
 diff --git a/certifi/core.py b/certifi/core.py
 index 1c9661c..e83593e 100644
 --- a/certifi/core.py
@@ -99,3 +122,98 @@ index 1c9661c..e83593e 100644
  
          return _CACERT_PATH
  
+diff --git a/certifi/tests/test_certify.py b/certifi/tests/test_certify.py
+index 54670ea..c03639a 100755
+--- a/certifi/tests/test_certify.py
++++ b/certifi/tests/test_certify.py
+@@ -1,7 +1,9 @@
+ import os
++import threading
+ import unittest
+ 
+ import certifi
++import certifi.core
+ 
+ 
+ class TestCertifi(unittest.TestCase):
+@@ -16,3 +18,77 @@ class TestCertifi(unittest.TestCase):
+         assert os.path.exists(
+             os.path.join(os.path.dirname(certifi.__file__), 'py.typed')
+         )
++
++
++class TestWhereThreadSafety(unittest.TestCase):
++    """where() must materialise the CA bundle exactly once.
++
++    The `if _CACERT_PATH is None` test and the assignment that publishes the
++    path are separate operations, so concurrent callers could each enter their
++    own resource context and register their own atexit hook while only the
++    last _CACERT_CTX assignment survived, orphaning the others. Under
++    zipimport as_file() extracts a temporary file, so an orphaned context is a
++    file nothing will clean up.
++    """
++
++    def test_where_enters_the_resource_context_once(self) -> None:
++        core = certifi.core
++        if not hasattr(core, "_CACERT_PATH"):
++            self.skipTest("this build of certifi does not lazily materialise the bundle")
++
++        original = (core._CACERT_PATH, core._CACERT_CTX, core.atexit.register)
++        registrations = []
++        lock = threading.Lock()
++
++        def counting_register(func, *args, **kwargs):
++            # Count rather than call through, so the test does not pile up real
++            # atexit hooks.
++            with lock:
++                registrations.append(func)
++
++        n_threads = 4
++        go = threading.Event()
++        results: list[str] = []
++
++        try:
++            core.atexit.register = counting_register
++
++            for _ in range(50):
++                core._CACERT_PATH = None
++                core._CACERT_CTX = None
++                registrations.clear()
++                results.clear()
++
++                def worker() -> None:
++                    # An Event rather than a Barrier, so a runner that can only
++                    # give us some of the threads still runs.
++                    go.wait()
++                    path = core.where()
++                    with lock:
++                        results.append(path)
++
++                threads = []
++                for _ in range(n_threads):
++                    thread = threading.Thread(target=worker)
++                    try:
++                        thread.start()
++                    except RuntimeError:
++                        break
++                    threads.append(thread)
++
++                if len(threads) < 2:
++                    go.set()
++                    for thread in threads:
++                        thread.join()
++                    self.skipTest("could not start enough threads to test for the race")
++
++                go.set()
++                for thread in threads:
++                    thread.join()
++                go.clear()
++
++                self.assertEqual(len(registrations), 1)
++                self.assertEqual(len(set(results)), 1)
++        finally:
++            go.set()
++            core._CACERT_PATH, core._CACERT_CTX, core.atexit.register = original
+-- 
+2.55.0
+
