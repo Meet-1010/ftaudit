@@ -9,12 +9,12 @@ was re-run with `PYTHON_GIL=1` on the same interpreter and the same wheels, so
 
 | # | Target | Finding | Deliverable |
 | --- | --- | --- | --- |
-| [01](01-cpython-generator-crash.md) | CPython 3.13t / 3.14t | Concurrent generator iteration segfaults the interpreter. Fixed on `main`, never backported. | reproducer + version matrix + backport request |
-| [06](06-sympy-dummy-index.md) | SymPy 1.14.0 | Concurrent `Dummy()` collides on `dummy_index`, so distinct dummies compare equal | patch + regression test |
+| [01](01-cpython-generator-crash.md) | CPython 3.13t / 3.14t | Concurrent generator iteration segfaults the interpreter. Fixed on `main`, never backported. | [issue #156351](https://github.com/python/cpython/issues/156351) |
+| [06](06-sympy-dummy-index.md) | SymPy 1.14.0 | Concurrent `Dummy()` collides on `dummy_index`, so distinct dummies compare equal | [PR #30340](https://github.com/sympy/sympy/pull/30340) |
 | [02](02-gil-reenabled-packages.md) | lxml, grpcio, SQLAlchemy | Undeclared extensions re-enable the GIL for the whole process | measurement + per-project reports |
-| [03](03-pyyaml-registries.md) | PyYAML 6.0.3 | Concurrent `add_constructor` / `add_*_resolver` silently loses registrations | patch + 5 regression tests |
-| [04](04-werkzeug-logger.md) | Werkzeug | Duplicate log handler installed on concurrent first log | patch |
-| [05](05-certifi-where.md) | certifi | `where()` orphans resource context managers | patch |
+| [03](03-pyyaml-registries.md) | PyYAML 6.0.3 | Concurrent `add_constructor` / `add_*_resolver` silently loses registrations | [#957](https://github.com/yaml/pyyaml/issues/957) + [PR #958](https://github.com/yaml/pyyaml/pull/958) |
+| [04](04-werkzeug-logger.md) | Werkzeug | Duplicate log handler installed on concurrent first log | [PR #3258](https://github.com/pallets/werkzeug/pull/3258) |
+| [05](05-certifi-where.md) | certifi | `where()` orphans resource context managers | [PR #433](https://github.com/certifi/python-certifi/pull/433) |
 
 ## Layout
 

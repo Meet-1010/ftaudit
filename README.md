@@ -147,8 +147,9 @@ Static findings are hypotheses. `ftaudit.stress` turns them into evidence:
 ## What it found
 
 Run against 85 packages / 4 963 files of the installed scientific-Python and
-web stack. Full write-ups in [`findings/`](findings/); ready-to-file issue and
-PR text in [`upstream/`](upstream/).
+web stack. Four patches and two issues are now upstream — see
+[`upstream/`](upstream/) for what was filed where, and [`findings/`](findings/)
+for the full write-ups.
 
 | # | Finding | Status |
 | --- | --- | --- |
@@ -156,8 +157,8 @@ PR text in [`upstream/`](upstream/).
 | [06](findings/06-sympy-dummy-index.md) | **SymPy** hands out colliding `dummy_index` values, so symbols meant to be distinct compare **equal** — silently wrong maths. 73% collided. | [PR #30340](https://github.com/sympy/sympy/pull/30340) |
 | [02](findings/02-gil-reenabled-packages.md) | **lxml, grpcio, SQLAlchemy** silently re-enable the GIL process-wide. Importing `bs4` is enough. | reports ready, not filed |
 | [03](findings/03-pyyaml-registries.md) | **PyYAML** loses constructor/resolver registrations under concurrent registration. | [issue #957](https://github.com/yaml/pyyaml/issues/957) · [PR #958](https://github.com/yaml/pyyaml/pull/958) |
-| [04](findings/04-werkzeug-logger.md) | **Werkzeug** installs its log handler twice; every line printed twice. | patch ready, not filed |
-| [05](findings/05-certifi-where.md) | **certifi** orphans resource context managers in `where()`. | patch ready, not filed |
+| [04](findings/04-werkzeug-logger.md) | **Werkzeug** installs its log handler twice; every line printed twice. | [PR #3258](https://github.com/pallets/werkzeug/pull/3258) |
+| [05](findings/05-certifi-where.md) | **certifi** orphans resource context managers in `where()`. | [PR #433](https://github.com/certifi/python-certifi/pull/433) |
 
 ## Development
 

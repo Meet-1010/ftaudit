@@ -1,6 +1,6 @@
 # certifi: concurrent `where()` orphans resource context managers
 
-**Status:** patch ready ([`patches/certifi-thread-safe-where.patch`](patches/certifi-thread-safe-where.patch))
+**Status:** filed — [certifi/python-certifi#433](https://github.com/certifi/python-certifi/pull/433)
 **Severity:** medium — resource leak; worst case a CA bundle path deleted while in use
 **File:** `certifi/core.py`
 

@@ -1,6 +1,6 @@
 # Werkzeug: concurrent first log call installs the handler twice
 
-**Status:** patch ready ([`patches/werkzeug-thread-safe-logger.patch`](patches/werkzeug-thread-safe-logger.patch))
+**Status:** filed — [pallets/werkzeug#3258](https://github.com/pallets/werkzeug/pull/3258)
 **Severity:** medium — duplicated log output, user-visible
 **File:** `src/werkzeug/_internal.py`
 
