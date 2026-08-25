@@ -1,0 +1,716 @@
+<title>What the GIL Was Hiding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400;12..96,75..100,600;12..96,75..100,800&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,600;1,6..72,400&family=JetBrains+Mono:wght@400;500;700&display=swap">
+
+<style>
+:root{
+  --paper:#F7F6F2;
+  --raise:#FFFFFF;
+  --sunk:#EFEDE6;
+  --ink:#141C22;
+  --ink-2:#3B4A52;
+  --muted:#5A6B72;
+  --rule:#DEDBD1;
+  --rule-2:#C9C5B8;
+
+  --crash:#C0442A;
+  --clean:#2277A8;
+  --brass:#A87C1F;
+  --crash-wash:#F6E4DF;
+  --clean-wash:#DFEBF3;
+  --brass-wash:#F3EBD8;
+
+  --shadow:0 1px 2px rgba(20,28,34,.05), 0 8px 24px -12px rgba(20,28,34,.16);
+
+  --display:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
+  --body:"Newsreader",Georgia,"Times New Roman",serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+
+  --measure:68ch;
+  --wide:min(1180px,100% - 3rem);
+}
+
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#12181C;
+    --raise:#182026;
+    --sunk:#0D1317;
+    --ink:#E3E7E6;
+    --ink-2:#B4C0C4;
+    --muted:#8B9A9F;
+    --rule:#243038;
+    --rule-2:#33424B;
+
+    --crash:#D25A3E;
+    --clean:#2E90C4;
+    --brass:#BA8722;
+    --crash-wash:#2C1B16;
+    --clean-wash:#12252F;
+    --brass-wash:#26200F;
+
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#12181C;
+  --raise:#182026;
+  --sunk:#0D1317;
+  --ink:#E3E7E6;
+  --ink-2:#B4C0C4;
+  --muted:#8B9A9F;
+  --rule:#243038;
+  --rule-2:#33424B;
+
+  --crash:#D25A3E;
+  --clean:#2E90C4;
+  --brass:#BA8722;
+  --crash-wash:#2C1B16;
+  --clean-wash:#12252F;
+  --brass-wash:#26200F;
+
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{width:var(--wide);margin-inline:auto}
+.col{max-width:var(--measure)}
+
+h1,h2,h3,h4{font-family:var(--display);font-weight:800;line-height:1.08;text-wrap:balance;margin:0}
+h2{font-size:clamp(1.55rem,3vw,2.1rem);letter-spacing:-.015em}
+h3{font-size:1.16rem;font-weight:600;letter-spacing:-.005em}
+p{margin:0}
+a{color:var(--clean);text-underline-offset:3px;text-decoration-thickness:1px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--brass);outline-offset:3px;border-radius:2px}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.66rem;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--brass);
+}
+.mono{font-family:var(--mono)}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- masthead ---------- */
+.mast{padding:clamp(3rem,7vw,5.5rem) 0 clamp(2rem,4vw,3rem);border-bottom:1px solid var(--rule)}
+.mast h1{
+  font-size:clamp(2.6rem,7.5vw,5.1rem);
+  letter-spacing:-.035em;
+  font-variation-settings:"wdth" 88;
+  margin:.7rem 0 0;
+}
+.dek{
+  font-size:clamp(1.06rem,2vw,1.32rem);line-height:1.5;color:var(--ink-2);
+  max-width:60ch;margin-top:1.15rem;font-weight:300;
+}
+.mast-meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.6rem;margin-top:2rem;
+  font-family:var(--mono);font-size:.74rem;color:var(--muted);
+}
+.mast-meta b{color:var(--ink-2);font-weight:500}
+
+/* ---------- thesis ---------- */
+.thesis{padding:clamp(2.5rem,5vw,4rem) 0;border-bottom:1px solid var(--rule)}
+.ab{
+  display:grid;gap:1px;background:var(--rule);
+  border:1px solid var(--rule);border-radius:3px;overflow:hidden;
+  margin-top:1.9rem;grid-template-columns:1fr;
+}
+@media(min-width:720px){.ab{grid-template-columns:1fr 1fr}}
+.ab-cell{background:var(--raise);padding:1.6rem 1.5rem}
+.ab-cell[data-state="off"]{background:var(--crash-wash)}
+.ab-cell[data-state="on"]{background:var(--clean-wash)}
+.ab-label{
+  font-family:var(--mono);font-size:.7rem;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;display:flex;align-items:center;gap:.5rem;
+}
+.ab-cell[data-state="off"] .ab-label{color:var(--crash)}
+.ab-cell[data-state="on"] .ab-label{color:var(--clean)}
+.dot{width:9px;height:9px;border-radius:50%;flex:none}
+.ab-cell[data-state="off"] .dot{background:var(--crash)}
+.ab-cell[data-state="on"] .dot{background:var(--clean)}
+.ab-fig{
+  font-family:var(--display);font-weight:800;letter-spacing:-.04em;
+  font-size:clamp(3rem,8vw,4.4rem);line-height:1;margin:.6rem 0 .1rem;
+  font-variant-numeric:tabular-nums;
+}
+.ab-cell[data-state="off"] .ab-fig{color:var(--crash)}
+.ab-cell[data-state="on"] .ab-fig{color:var(--clean)}
+.ab-sub{font-family:var(--mono);font-size:.76rem;color:var(--ink-2);line-height:1.5}
+.ab-note{
+  margin-top:1.1rem;font-size:.94rem;color:var(--ink-2);
+  border-top:1px solid var(--rule-2);padding-top:.85rem;
+}
+
+/* ---------- sections ---------- */
+section{padding:clamp(2.6rem,5vw,4rem) 0;border-bottom:1px solid var(--rule)}
+.sec-head{display:flex;flex-direction:column;gap:.55rem;margin-bottom:1.7rem}
+.lede{color:var(--ink-2);font-size:1.02rem;max-width:64ch}
+
+/* ---------- the tool ---------- */
+.passes{display:grid;gap:1rem;grid-template-columns:1fr;margin-top:1.6rem}
+@media(min-width:820px){.passes{grid-template-columns:repeat(3,1fr)}}
+.pass{
+  background:var(--raise);border:1px solid var(--rule);border-radius:3px;
+  padding:1.25rem 1.2rem;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:.55rem;
+}
+.pass code{
+  font-family:var(--mono);font-size:.82rem;font-weight:700;color:var(--ink);
+  background:var(--sunk);border:1px solid var(--rule);border-radius:2px;
+  padding:.16rem .42rem;align-self:flex-start;
+}
+.pass p{font-size:.93rem;color:var(--ink-2);line-height:1.55}
+
+/* ---------- terminal ---------- */
+.term{
+  background:var(--sunk);border:1px solid var(--rule);border-radius:3px;
+  overflow-x:auto;margin-top:1.3rem;
+}
+.term-bar{
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);padding:.5rem .95rem;border-bottom:1px solid var(--rule);
+  position:sticky;left:0;
+}
+.term pre{
+  margin:0;padding:.95rem;font-family:var(--mono);font-size:.78rem;line-height:1.65;
+  color:var(--ink-2);white-space:pre;
+}
+.term .c{color:var(--crash);font-weight:500}
+.term .g{color:var(--clean);font-weight:500}
+.term .d{color:var(--muted)}
+.term .p{color:var(--brass)}
+
+/* ---------- matrix ---------- */
+.tablewrap{overflow-x:auto;margin-top:1.5rem;border:1px solid var(--rule);border-radius:3px;background:var(--raise)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:.86rem}
+caption{
+  text-align:left;padding:.85rem .95rem;font-family:var(--mono);font-size:.68rem;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+  border-bottom:1px solid var(--rule);
+}
+th,td{padding:.6rem .95rem;text-align:left;border-bottom:1px solid var(--rule)}
+thead th{
+  font-family:var(--mono);font-size:.68rem;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--muted);vertical-align:bottom;
+}
+tbody th{font-family:var(--mono);font-size:.79rem;font-weight:500;color:var(--ink);white-space:nowrap}
+td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:.81rem}
+tbody tr:last-child th,tbody tr:last-child td{border-bottom:none}
+.cell{display:inline-flex;align-items:center;gap:.45rem;white-space:nowrap}
+.chip{
+  display:inline-block;width:6px;height:16px;border-radius:1px;flex:none;
+}
+.bad .chip{background:var(--crash)}
+.ok  .chip{background:var(--clean)}
+.bad{color:var(--crash);font-weight:500}
+.ok{color:var(--clean);font-weight:500}
+tr.control th,tr.control td{background:var(--clean-wash)}
+
+/* ---------- findings ---------- */
+.ledger{display:flex;flex-direction:column;gap:1.1rem;margin-top:1.7rem}
+.finding{
+  background:var(--raise);border:1px solid var(--rule);border-radius:3px;
+  box-shadow:var(--shadow);overflow:hidden;
+  display:grid;grid-template-columns:4px 1fr;
+}
+.stripe{background:var(--rule-2)}
+.finding[data-sev="high"] .stripe{background:var(--crash)}
+.finding[data-sev="med"] .stripe{background:var(--brass)}
+.finding-body{padding:1.3rem 1.35rem}
+.finding-head{display:flex;flex-wrap:wrap;gap:.6rem 1rem;align-items:baseline;justify-content:space-between}
+.target{font-family:var(--mono);font-size:.94rem;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+.badges{display:flex;gap:.4rem;flex-wrap:wrap}
+.badge{
+  font-family:var(--mono);font-size:.63rem;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;padding:.2rem .48rem;border-radius:2px;border:1px solid;
+}
+.badge.sev-high{color:var(--crash);border-color:var(--crash);background:var(--crash-wash)}
+.badge.sev-med{color:var(--brass);border-color:var(--brass);background:var(--brass-wash)}
+.badge.deliv{color:var(--clean);border-color:var(--clean);background:var(--clean-wash)}
+.finding h3{margin-top:.75rem}
+.finding p.what{margin-top:.5rem;color:var(--ink-2);font-size:.98rem}
+.evidence{
+  margin-top:1rem;padding-top:.9rem;border-top:1px solid var(--rule);
+  display:grid;gap:.75rem;grid-template-columns:1fr;
+}
+@media(min-width:640px){.evidence{grid-template-columns:1fr 1fr}}
+.metric{display:flex;flex-direction:column;gap:.3rem}
+.metric-label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+}
+.meter{height:6px;background:var(--sunk);border-radius:99px;overflow:hidden;border:1px solid var(--rule)}
+.meter i{display:block;height:100%;border-radius:99px}
+.meter.bad i{background:var(--crash)}
+.meter.ok  i{background:var(--clean)}
+.metric-val{font-family:var(--mono);font-size:.78rem;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.metric-val b{color:var(--ink);font-weight:700}
+
+/* ---------- rules grid ---------- */
+.rules{
+  display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule);
+  border-radius:3px;overflow:hidden;margin-top:1.5rem;grid-template-columns:1fr;
+}
+@media(min-width:600px){.rules{grid-template-columns:1fr 1fr}}
+@media(min-width:960px){.rules{grid-template-columns:repeat(3,1fr)}}
+.rule{background:var(--raise);padding:.85rem .95rem;display:flex;gap:.7rem;align-items:baseline}
+.rule .id{font-family:var(--mono);font-size:.72rem;font-weight:700;color:var(--brass);flex:none}
+.rule .t{font-size:.88rem;color:var(--ink-2);line-height:1.45}
+.rule .t b{color:var(--ink);font-weight:600;font-family:var(--mono);font-size:.8rem}
+
+/* ---------- caveats ---------- */
+.caveats{background:var(--sunk);border:1px solid var(--rule);border-radius:3px;padding:1.4rem 1.4rem;margin-top:1.5rem}
+.caveats ul{margin:.7rem 0 0;padding-left:1.1rem;display:flex;flex-direction:column;gap:.55rem}
+.caveats li{color:var(--ink-2);font-size:.95rem;line-height:1.55}
+.caveats li b{color:var(--ink);font-weight:600}
+
+footer{padding:2.4rem 0 3.4rem;color:var(--muted);font-family:var(--mono);font-size:.72rem;line-height:1.7}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header class="mast">
+    <div class="col">
+      <div class="eyebrow">Free-threading audit &middot; CPython 3.14.4t</div>
+      <h1>What the GIL Was Hiding</h1>
+      <p class="dek">
+        PEP&nbsp;779 made free-threaded Python officially supported in 3.14. I built a
+        toolkit to find the thread-safety bugs that the GIL had been papering over,
+        pointed it at 79&nbsp;installed packages, and found five &mdash; including a hard
+        interpreter crash that has been fixed on <span class="mono">main</span> for six days
+        and never backported to a supported release.
+      </p>
+      <div class="mast-meta">
+        <span>Scope <b>79 packages &middot; 4,726 files</b></span>
+        <span>Host <b>macOS 15 &middot; arm64 &middot; 10 cores</b></span>
+        <span>Date <b>2026-08-25</b></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ THESIS ============ -->
+  <div class="thesis">
+    <div class="col">
+      <div class="eyebrow">The method</div>
+      <h2>Same interpreter. Same wheels. One variable.</h2>
+      <p class="lede" style="margin-top:.9rem">
+        A free-threaded build can put the GIL back with <span class="mono">PYTHON_GIL=1</span>.
+        That turns &ldquo;this is a free-threading bug&rdquo; from an assertion into a
+        controlled A/B &mdash; the same binary, the same installed packages, the same script,
+        with the lock as the only difference. Every claim below is stated that way.
+      </p>
+    </div>
+
+    <div class="ab">
+      <div class="ab-cell" data-state="off">
+        <div class="ab-label"><span class="dot"></span>GIL disabled</div>
+        <div class="ab-fig num">150<span style="font-size:.42em;color:var(--ink-2)">/180</span></div>
+        <div class="ab-sub">runs crashed the interpreter<br>SIGSEGV &middot; SIGBUS &middot; fatal error</div>
+      </div>
+      <div class="ab-cell" data-state="on">
+        <div class="ab-label"><span class="dot"></span>GIL enabled</div>
+        <div class="ab-fig num">0<span style="font-size:.42em;color:var(--ink-2)">/180</span></div>
+        <div class="ab-sub">runs crashed the interpreter<br>clean on every configuration</div>
+      </div>
+    </div>
+    <div class="col">
+      <p class="ab-note">
+        Two threads calling <span class="mono">next()</span> on one generator. Nine lines of
+        pure Python, no third-party code.
+      </p>
+    </div>
+  </div>
+
+  <!-- ============ THE TOOL ============ -->
+  <section>
+    <div class="col sec-head">
+      <div class="eyebrow">The instrument</div>
+      <h2>ftaudit</h2>
+      <p class="lede">
+        Existing tooling runs a project&rsquo;s <em>existing tests</em> in parallel. The official
+        free-threading guide is explicit about the gap: it &ldquo;cannot discover issues from
+        multithreaded use of data structures defined by your library.&rdquo; Tests exercise one
+        object each; the races live in the shared module-level state no test contends on.
+        Three passes, zero dependencies.
+      </p>
+    </div>
+
+    <div class="passes">
+      <div class="pass">
+        <code>ftaudit scan</code>
+        <p>Fourteen lock-aware AST rules. Walks only function bodies &mdash; module-level
+        mutation runs once under the import lock and is not a race. Tracks lock depth,
+        recognises correct double-checked locking, treats <span class="mono">setdefault</span>
+        as atomic.</p>
+      </div>
+      <div class="pass">
+        <code>ftaudit gilcheck</code>
+        <p>Imports every dependency in a fresh subprocess and samples
+        <span class="mono">sys._is_gil_enabled()</span> before and after. Catches the
+        extension that silently switches the GIL back on for the whole process.</p>
+      </div>
+      <div class="pass">
+        <code>ftaudit stress</code>
+        <p>Barrier-released workers that assert an <em>invariant</em>, so &ldquo;no exception&rdquo;
+        is never mistaken for &ldquo;no bug&rdquo;. Escalates thread count, then re-runs the
+        whole campaign under <span class="mono">PYTHON_GIL=1</span>.</p>
+      </div>
+    </div>
+
+    <div class="term">
+      <div class="term-bar">$ ftaudit stress findings/reproducers/pyyaml_add_constructor.py --trials 20</div>
+<pre><span class="d">  interpreter: 3.14 free-threaded (gil=off)</span>
+
+  <span class="c">GIL disabled    20/20 failed (100%)</span>
+  <span class="g">GIL enabled      0/20 failed (0%)</span>
+
+  <span class="p">=&gt; reproduces only with the GIL disabled: a free-threading-specific defect.</span></pre>
+    </div>
+
+    <div class="col" style="margin-top:2.2rem">
+      <h3>Keeping the false-positive rate honest</h3>
+      <p class="lede" style="margin-top:.6rem">
+        A race linter is only useful if you believe it. Two corpus files pin both directions:
+        <span class="mono">racy.py</span> contains one instance of every rule and every rule must
+        fire; <span class="mono">safe.py</span> contains the <em>correct</em> version of each of
+        those patterns and must produce zero actionable findings. The suite asserts both.
+      </p>
+    </div>
+
+    <div class="rules">
+      <div class="rule"><span class="id">FT102</span><span class="t"><b>lazy-init-race</b><br>if X is None: X = &hellip;</span></div>
+      <div class="rule"><span class="id">FT103</span><span class="t"><b>check-then-act</b><br>membership test, then mutate</span></div>
+      <div class="rule"><span class="id">FT105</span><span class="t"><b>read-modify-write</b><br>counter += 1 on shared state</span></div>
+      <div class="rule"><span class="id">FT106</span><span class="t"><b>process-global</b><br>os.environ, locale, signals</span></div>
+      <div class="rule"><span class="id">FT107</span><span class="t"><b>save-mutate-restore</b><br>global changed then put back</span></div>
+      <div class="rule"><span class="id">FT108</span><span class="t"><b>broken-dcl</b><br>no re-check inside the lock</span></div>
+      <div class="rule"><span class="id">FT111</span><span class="t"><b>useless-fresh-lock</b><br>with threading.Lock():</span></div>
+      <div class="rule"><span class="id">FT112</span><span class="t"><b>undeclared-native-ext</b><br>no Py_mod_gil declaration</span></div>
+      <div class="rule"><span class="id">FT114</span><span class="t"><b>cached_property</b><br>side-effecting body, runs twice</span></div>
+    </div>
+    <p class="mono" style="font-size:.74rem;color:var(--muted);margin-top:.9rem">
+      &hellip;plus FT101, FT104, FT109, FT110, FT113. <span class="mono">ftaudit rules -v</span> prints the rationale and fix for each.
+    </p>
+  </section>
+
+  <!-- ============ FINDINGS ============ -->
+  <section>
+    <div class="col sec-head">
+      <div class="eyebrow">Findings</div>
+      <h2>Five bugs, three patches</h2>
+      <p class="lede">
+        Ordered by reach. Every runtime number is <em>failures / trials</em>, and every one was
+        re-run with the GIL forced on.
+      </p>
+    </div>
+
+    <div class="ledger">
+
+      <article class="finding" data-sev="high">
+        <div class="stripe"></div>
+        <div class="finding-body">
+          <div class="finding-head">
+            <div class="target">CPython 3.13t &amp; 3.14t</div>
+            <div class="badges">
+              <span class="badge sev-high">Interpreter crash</span>
+              <span class="badge deliv">Backport request</span>
+            </div>
+          </div>
+          <h3>Two threads iterating one generator segfault the interpreter</h3>
+          <p class="what">
+            The documented behaviour is <span class="mono">ValueError: generator already
+            executing</span>. Instead the process dies with SIGSEGV, SIGBUS, or
+            <span class="mono">Fatal Python error: _TAIL_CALL_CACHE</span> &mdash; no Python-level
+            exception, so it is uncatchable. The fix series for
+            <a href="https://github.com/python/cpython/issues/120321">gh-120321</a> landed on
+            <span class="mono">main</span> and closed on 2026-08-19; every PR is labelled 3.15 only.
+            <span class="mono">Objects/genobject.c</span> on <span class="mono">main</span> has
+            38&nbsp;<span class="mono">FT_ATOMIC_*</span> frame-state guards. The 3.14 and 3.13
+            branches have zero.
+          </p>
+          <div class="evidence">
+            <div class="metric">
+              <span class="metric-label">3.14.4t &middot; GIL off</span>
+              <div class="meter bad"><i style="width:88.3%"></i></div>
+              <span class="metric-val"><b>53/60</b> runs crashed</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">3.15.0a8t &middot; and GIL on</span>
+              <div class="meter ok"><i style="width:0%"></i></div>
+              <span class="metric-val"><b>0/120</b> runs crashed</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="finding" data-sev="high">
+        <div class="stripe"></div>
+        <div class="finding-body">
+          <div class="finding-head">
+            <div class="target">lxml &middot; grpcio &middot; SQLAlchemy</div>
+            <div class="badges">
+              <span class="badge sev-high">Whole-process</span>
+              <span class="badge deliv">Reports ready</span>
+            </div>
+          </div>
+          <h3>Undeclared extensions switch the GIL back on for everyone</h3>
+          <p class="what">
+            An extension that never sets <span class="mono">Py_mod_gil = Py_MOD_GIL_NOT_USED</span>
+            makes CPython re-enable the GIL process-wide at import. All three ship
+            <span class="mono">cp314t</span> wheels, install cleanly, and look supported. The cost
+            is paid transitively: <span class="mono">import bs4</span> re-enables the GIL, because
+            BeautifulSoup imports lxml &mdash; neither contains a line of at-fault code.
+          </p>
+          <div class="evidence">
+            <div class="metric">
+              <span class="metric-label">Modules checked</span>
+              <div class="meter ok"><i style="width:96.3%"></i></div>
+              <span class="metric-val"><b>78/81</b> kept the GIL off</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Re-enabled the GIL</span>
+              <div class="meter bad"><i style="width:3.7%"></i></div>
+              <span class="metric-val"><b>3</b> packages, 8 extension modules</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="finding" data-sev="high">
+        <div class="stripe"></div>
+        <div class="finding-body">
+          <div class="finding-head">
+            <div class="target">PyYAML 6.0.3</div>
+            <div class="badges">
+              <span class="badge sev-high">Silent data loss</span>
+              <span class="badge deliv">Patch + 5 tests</span>
+            </div>
+          </div>
+          <h3>Concurrent registration silently loses constructors and resolvers</h3>
+          <p class="what">
+            Every registry uses the same copy-on-first-write idiom: test
+            <span class="mono">cls.__dict__</span>, copy the inherited dict, store. Two threads
+            both find it absent, both copy the <em>parent</em> dict, and the second assignment
+            discards the first thread&rsquo;s. That registration is gone with no error &mdash; the
+            tag simply fails to resolve later, far from the cause. Six methods across
+            <span class="mono">constructor.py</span>, <span class="mono">representer.py</span> and
+            <span class="mono">resolver.py</span>.
+          </p>
+          <div class="evidence">
+            <div class="metric">
+              <span class="metric-label">Before &middot; 16 threads</span>
+              <div class="meter bad"><i style="width:100%"></i></div>
+              <span class="metric-val">up to <b>10 of 16</b> registrations lost in one trial</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">After the patch</span>
+              <div class="meter ok"><i style="width:0%"></i></div>
+              <span class="metric-val"><b>0/400</b> trials &middot; 1292 tests pass</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="finding" data-sev="med">
+        <div class="stripe"></div>
+        <div class="finding-body">
+          <div class="finding-head">
+            <div class="target">Werkzeug</div>
+            <div class="badges">
+              <span class="badge sev-med">Duplicated output</span>
+              <span class="badge deliv">Patch</span>
+            </div>
+          </div>
+          <h3>The log handler gets installed twice</h3>
+          <p class="what">
+            <span class="mono">_log()</span> has two check-then-act races stacked &mdash;
+            <span class="mono">_logger is None</span> and
+            <span class="mono">_has_level_handler()</span> &mdash; plus a publication bug: it
+            assigns <span class="mono">_logger</span> <em>before</em> configuring the level and
+            handler, so another thread can pick up a half-built logger. Result: every werkzeug
+            log line printed once per extra handler.
+          </p>
+          <div class="evidence">
+            <div class="metric">
+              <span class="metric-label">Before</span>
+              <div class="meter bad"><i style="width:22%"></i></div>
+              <span class="metric-val"><b>4/300</b> trials got 2 handlers</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">After the patch</span>
+              <div class="meter ok"><i style="width:0%"></i></div>
+              <span class="metric-val"><b>0/300</b> trials &middot; 995 tests pass</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="finding" data-sev="med">
+        <div class="stripe"></div>
+        <div class="finding-body">
+          <div class="finding-head">
+            <div class="target">certifi</div>
+            <div class="badges">
+              <span class="badge sev-med">Resource leak</span>
+              <span class="badge deliv">Patch</span>
+            </div>
+          </div>
+          <h3><span class="mono">where()</span> orphans its resource context managers</h3>
+          <p class="what">
+            Concurrent callers all pass the <span class="mono">is None</span> test; each enters
+            its own context manager and registers its own <span class="mono">atexit</span> hook,
+            but only the last <span class="mono">_CACERT_CTX</span> survives. Under zipimport,
+            <span class="mono">as_file</span> extracts a temp file &mdash; so an orphan is a file
+            nobody cleans up, and the duplicate hooks can delete a path another thread still holds.
+          </p>
+          <div class="evidence">
+            <div class="metric">
+              <span class="metric-label">Before &middot; GIL off</span>
+              <div class="meter bad"><i style="width:100%"></i></div>
+              <span class="metric-val"><b>200/200</b> trials raced</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">After the patch</span>
+              <div class="meter ok"><i style="width:0%"></i></div>
+              <span class="metric-val"><b>0/200</b> trials &middot; tests pass</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ MATRIX ============ -->
+  <section>
+    <div class="col sec-head">
+      <div class="eyebrow">Evidence &middot; finding 01</div>
+      <h2>The version bisect</h2>
+      <p class="lede">
+        Twenty runs per cell. The bottom three rows are controls &mdash; the fix on
+        <span class="mono">main</span>, the same interpreter with the lock forced on, and a stock
+        GIL build. All three are clean, which is what isolates the defect to the free-threaded
+        3.13 and 3.14 lines.
+      </p>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <caption>Crashes per 20 runs &middot; findings/reproducers/gen_concurrent_next.py</caption>
+        <thead>
+          <tr>
+            <th scope="col">Interpreter</th>
+            <th scope="col">2&nbsp;threads<br>&times;&nbsp;3,000</th>
+            <th scope="col">8&nbsp;threads<br>&times;&nbsp;20,000</th>
+            <th scope="col">16&nbsp;threads<br>&times;&nbsp;50,000</th>
+            <th scope="col">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">3.13.13 free-threaded</th>
+            <td class="n"><span class="cell bad"><span class="chip"></span>2/20</span></td>
+            <td class="n"><span class="cell bad"><span class="chip"></span>20/20</span></td>
+            <td class="n"><span class="cell bad"><span class="chip"></span>18/20</span></td>
+            <td class="n"><span class="cell bad">40/60</span></td>
+          </tr>
+          <tr>
+            <th scope="row">3.14.0 free-threaded</th>
+            <td class="n"><span class="cell bad"><span class="chip"></span>19/20</span></td>
+            <td class="n"><span class="cell bad"><span class="chip"></span>20/20</span></td>
+            <td class="n"><span class="cell bad"><span class="chip"></span>18/20</span></td>
+            <td class="n"><span class="cell bad">57/60</span></td>
+          </tr>
+          <tr>
+            <th scope="row">3.14.4 free-threaded</th>
+            <td class="n"><span class="cell bad"><span class="chip"></span>20/20</span></td>
+            <td class="n"><span class="cell bad"><span class="chip"></span>20/20</span></td>
+            <td class="n"><span class="cell bad"><span class="chip"></span>13/20</span></td>
+            <td class="n"><span class="cell bad">53/60</span></td>
+          </tr>
+          <tr class="control">
+            <th scope="row">3.15.0a8 free-threaded</th>
+            <td class="n"><span class="cell ok"><span class="chip"></span>0/20</span></td>
+            <td class="n"><span class="cell ok"><span class="chip"></span>0/20</span></td>
+            <td class="n"><span class="cell ok"><span class="chip"></span>0/20</span></td>
+            <td class="n"><span class="cell ok">0/60</span></td>
+          </tr>
+          <tr class="control">
+            <th scope="row">3.14.4t, PYTHON_GIL=1</th>
+            <td class="n"><span class="cell ok"><span class="chip"></span>0/20</span></td>
+            <td class="n"><span class="cell ok"><span class="chip"></span>0/20</span></td>
+            <td class="n"><span class="cell ok"><span class="chip"></span>0/20</span></td>
+            <td class="n"><span class="cell ok">0/60</span></td>
+          </tr>
+          <tr class="control">
+            <th scope="row">3.14.7, GIL build</th>
+            <td class="n"><span class="cell ok"><span class="chip"></span>0/20</span></td>
+            <td class="n"><span class="cell ok"><span class="chip"></span>0/20</span></td>
+            <td class="n"><span class="cell ok"><span class="chip"></span>0/20</span></td>
+            <td class="n"><span class="cell ok">0/60</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="term">
+      <div class="term-bar">the whole reproducer</div>
+<pre><span class="p">def</span> gen():
+    <span class="p">while</span> True:
+        <span class="p">yield</span> 1
+
+g = gen()
+barrier = threading.Barrier(2)
+
+<span class="p">def</span> worker():
+    barrier.wait()
+    <span class="p">for</span> _ <span class="p">in</span> range(3000):
+        <span class="p">try</span>:
+            next(g)
+        <span class="p">except</span> ValueError:
+            <span class="d">pass          # the documented, correct outcome</span></pre>
+    </div>
+  </section>
+
+  <!-- ============ CAVEATS ============ -->
+  <section style="border-bottom:none">
+    <div class="col sec-head">
+      <div class="eyebrow">Honest limits</div>
+      <h2>What this does not show</h2>
+    </div>
+    <div class="col caveats">
+      <ul>
+        <li><b>One platform.</b> Everything was reproduced on macOS&nbsp;15 / arm64 only. These
+        are data races; timing elsewhere will differ. The 3.13.13t two-thread cell (2/20) shows
+        how sensitive that is even on one machine.</li>
+        <li><b>Narrow triggers on two findings.</b> PyYAML and Werkzeug need registration or
+        first-log to happen concurrently, which many programs never do. Real correctness bugs,
+        limited blast radius &mdash; the write-ups say so.</li>
+        <li><b>certifi is not free-threading-specific.</b> It reproduces with the GIL on too
+        (1/200 vs 200/200). It should be filed as a general thread-safety bug, not a regression.</li>
+        <li><b>&ldquo;Re-enables the GIL&rdquo; is a packaging fact, not an accusation.</b> Those
+        extensions may well be thread-safe and merely undeclared. Only an audit settles it, which
+        is why the ask is a tracking issue rather than a drive-by PR adding the flag.</li>
+        <li><b>No issues have been filed.</b> The reports, reproducers and patches are written and
+        verified; submitting them upstream is a decision for a human, not the tool.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer class="col">
+    ftaudit 0.1.0 &middot; 32 tests &middot; MIT<br>
+    Interpreters via <span class="mono">uv python install</span>: 3.13.13t, 3.14.0t, 3.14.4t, 3.15.0a8t.<br>
+    Raw data: <span class="mono">findings/crash_matrix.json</span>, <span class="mono">findings/gilcheck.json</span>, <span class="mono">findings/ecosystem_scan.json</span>.
+  </footer>
+
+</div>
