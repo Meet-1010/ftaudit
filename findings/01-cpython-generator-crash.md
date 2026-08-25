@@ -1,6 +1,6 @@
 # CPython: concurrent generator iteration segfaults on free-threaded 3.13 / 3.14
 
-**Status:** ready to file as a backport request against `python/cpython`
+**Status:** filed as [python/cpython#156351](https://github.com/python/cpython/issues/156351)
 **Severity:** interpreter crash (SIGSEGV / SIGBUS) reachable from pure Python
 **Affected:** every free-threaded 3.13.x and 3.14.x build
 **Already fixed in:** `main` (3.15) — never backported
@@ -77,6 +77,21 @@ configured `--with-tail-call-interp`), and once
 changes how the corruption surfaces — 3.13.13t is built *without* it and still
 segfaults.
 
+## Cross-platform confirmation
+
+The original matrix was macOS/arm64 only. The same reproducer run through GitHub
+Actions reproduces on all three major platforms — 20 runs per cell, defaults
+(2 threads × 3,000 iterations):
+
+| Runner | 3.13t GIL off | 3.13t GIL on | 3.14t GIL off | 3.14t GIL on |
+| --- | --- | --- | --- | --- |
+| `ubuntu-latest` (x86-64) | **8/20** | 0/20 | **18/20** | 0/20 |
+| `windows-latest` (x86-64) | **14/20** | 0/20 | **17/20** | 0/20 |
+| `macos-latest` | **3/20** | 0/20 | **19/20** | 0/20 |
+
+Every GIL-enabled control is clean on every platform. The rate varies with the
+machine, as expected for a data race, but 3.14t is above 85% everywhere.
+
 ## Why the fix is missing
 
 `Objects/genobject.c` on `main` contains **38** `FT_ATOMIC_*` operations
@@ -126,9 +141,9 @@ instead of corrupting the frame.
 
 ## Caveats
 
-- Reproduced on a single platform (macOS 15 / arm64, Apple M5). The crash is a
-  data race, so timing on other platforms will differ; the 3.13.13t 2-thread
-  cell (2/20) shows sensitivity to load even here.
+- Reproduced on Linux x86-64, Windows x86-64 and macOS (arm64 and CI). The rate
+  is load-sensitive, as expected for a data race — the 3.13t two-thread cells
+  range from 2/20 to 14/20 depending on the machine.
 - The interpreters are the `python-build-standalone` builds that `uv` ships,
   not builds from source. All are configured `--disable-gil`; the 3.14/3.15
   ones are additionally `--with-tail-call-interp`.

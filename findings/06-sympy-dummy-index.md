@@ -1,6 +1,6 @@
 # SymPy: concurrent `Dummy()` hands out colliding indices, silently corrupting results
 
-**Status:** patch + regression test ready ([`patches/sympy-dummy-index-thread-safe.patch`](patches/sympy-dummy-index-thread-safe.patch))
+**Status:** filed — [sympy/sympy#30340](https://github.com/sympy/sympy/pull/30340)
 **Severity:** high — silently wrong mathematical results, no exception
 **Upstream home:** [sympy/sympy#28239 "SymPy free threading support"](https://github.com/sympy/sympy/issues/28239) (open)
 

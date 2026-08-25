@@ -1,6 +1,6 @@
 # PyYAML: concurrent registration silently loses constructors and resolvers
 
-**Status:** patch + regression tests ready ([`patches/pyyaml-thread-safe-registries.patch`](patches/pyyaml-thread-safe-registries.patch))
+**Status:** filed — [issue #957](https://github.com/yaml/pyyaml/issues/957), [PR #958](https://github.com/yaml/pyyaml/pull/958)
 **Severity:** high — silent data loss, no exception
 **Upstream home:** [yaml/pyyaml#870 "Free-threaded support blockers"](https://github.com/yaml/pyyaml/issues/870) (open)
 
